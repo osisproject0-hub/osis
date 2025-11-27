@@ -4,13 +4,14 @@ import {
   type FirebaseApp,
   type FirebaseOptions,
   initializeApp,
+  getApps,
 } from 'firebase/app';
 import { Auth, getAuth } from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
 
-let app: FirebaseApp | undefined;
-let auth: Auth | undefined;
-let firestore: Firestore | undefined;
+let app: FirebaseApp;
+let auth: Auth;
+let firestore: Firestore;
 
 export function initializeFirebase(
   options: FirebaseOptions
@@ -19,17 +20,17 @@ export function initializeFirebase(
   auth: Auth;
   firestore: Firestore;
 } {
-  if (app) {
-    console.warn(
-      'Firebase is already initialized. This is probably not what you want.'
-    );
-  } else {
+  if (!getApps().length) {
     app = initializeApp(options);
+    auth = getAuth(app);
+    firestore = getFirestore(app);
+  } else {
+    app = getApps()[0];
     auth = getAuth(app);
     firestore = getFirestore(app);
   }
 
-  return { app, auth: auth!, firestore: firestore! };
+  return { app, auth, firestore };
 }
 
 export * from './provider';
