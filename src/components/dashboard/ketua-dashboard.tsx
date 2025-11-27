@@ -1,8 +1,8 @@
 'use client';
 
 import { FileCheck, Users, Wallet, BarChart } from 'lucide-react';
-import { useUser, useCollection } from '@/firebase';
-import { query, where } from 'firebase/firestore';
+import { useUser, useCollection, useFirestore } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIBriefing } from '@/components/dashboard/ai-briefing';
 import { TasksTable } from '@/components/tasks-table';
@@ -11,9 +11,9 @@ import type { Task } from '@/lib/types';
 
 export function KetuaDashboard() {
   const { user } = useUser();
-  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(
-    user ? query('tasks', where('assignedToUID', '==', user.uid)) : null
-  );
+  const firestore = useFirestore();
+  const myTasksQuery = user ? query(collection(firestore!, 'tasks'), where('assignedToUID', '==', user.uid)) : null;
+  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(myTasksQuery);
 
   // In a real app, these stats would come from Firestore queries
   const stats = [
@@ -51,3 +51,5 @@ export function KetuaDashboard() {
     </div>
   );
 }
+
+    

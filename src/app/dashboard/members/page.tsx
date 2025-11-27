@@ -16,10 +16,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert, Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { User as UserType } from '@/lib/types';
+import { useFirestore } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
 
 export default function MembersPage() {
   const { user: currentUser } = useUser();
-  const { data: members, loading } = useCollection<UserType>('users');
+  const firestore = useFirestore();
+  const membersQuery = firestore ? query(collection(firestore, 'users')) : null;
+  const { data: members, loading } = useCollection<UserType>(membersQuery);
 
   if (!currentUser || currentUser.accessLevel < 9) {
     return (
@@ -97,3 +101,5 @@ export default function MembersPage() {
     </div>
   );
 }
+
+    

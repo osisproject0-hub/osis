@@ -16,6 +16,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { collection, query } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 
 const statusVariant: { [key: string]: 'default' | 'secondary' | 'destructive' } = {
   Approved: 'default',
@@ -24,8 +26,12 @@ const statusVariant: { [key: string]: 'default' | 'secondary' | 'destructive' } 
 };
 
 export default function FinancePage() {
-  const { data: fundRequests, loading: requestsLoading } = useCollection<FundRequest>('fundRequests');
-  const { data: financialReports, loading: reportsLoading } = useCollection<FinancialReport>('financialReports');
+  const firestore = useFirestore();
+  const fundRequestsQuery = firestore ? query(collection(firestore, 'fundRequests')) : null;
+  const financialReportsQuery = firestore ? query(collection(firestore, 'financialReports')) : null;
+
+  const { data: fundRequests, loading: requestsLoading } = useCollection<FundRequest>(fundRequestsQuery);
+  const { data: financialReports, loading: reportsLoading } = useCollection<FinancialReport>(financialReportsQuery);
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
@@ -134,3 +140,5 @@ export default function FinancePage() {
     </div>
   );
 }
+
+    

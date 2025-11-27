@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
-import { useUser, useCollection } from '@/firebase';
-import { query, where } from 'firebase/firestore';
+import { useUser, useCollection, useFirestore } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 import type { Task } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,9 +10,9 @@ import { DollarSign } from 'lucide-react';
 
 export function BendaharaDashboard() {
   const { user } = useUser();
-  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(
-    user ? query('tasks', where('assignedToUID', '==', user.uid)) : null
-  );
+  const firestore = useFirestore();
+  const myTasksQuery = user ? query(collection(firestore!, 'tasks'), where('assignedToUID', '==', user.uid)) : null;
+  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(myTasksQuery);
 
   const stats = [
     { title: 'Total Dana Masuk', value: 'Rp 25.5M' },
@@ -57,3 +57,5 @@ export function BendaharaDashboard() {
     </div>
   );
 }
+
+    

@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useUser, useCollection } from '@/firebase';
-import { query, where } from 'firebase/firestore';
+import { useUser, useCollection, useFirestore } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 import type { Task } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,9 +11,9 @@ import { BookText } from 'lucide-react';
 
 export function SekretarisDashboard() {
   const { user } = useUser();
-  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(
-    user ? query('tasks', where('assignedToUID', '==', user.uid)) : null
-  );
+  const firestore = useFirestore();
+  const myTasksQuery = user ? query(collection(firestore!, 'tasks'), where('assignedToUID', '==', user.uid)) : null;
+  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(myTasksQuery);
 
   return (
     <div className="space-y-6">
@@ -45,3 +45,5 @@ export function SekretarisDashboard() {
     </div>
   );
 }
+
+    

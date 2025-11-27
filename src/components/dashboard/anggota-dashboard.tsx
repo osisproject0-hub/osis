@@ -1,23 +1,23 @@
 'use client';
 
-import { useCollection, useUser } from '@/firebase';
+import { useCollection, useUser, useFirestore } from '@/firebase';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import Image from 'next/image';
-import { query, where } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import type { Task, User } from '@/lib/types';
 import { Skeleton } from '../ui/skeleton';
 
 export function AnggotaDashboard() {
   const { user, isLoading: isUserLoading } = useUser();
-  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(
-    user ? query('tasks', where('assignedToUID', '==', user.uid)) : null
-  );
+  const firestore = useFirestore();
+
+  const myTasksQuery = user ? query(collection(firestore!, 'tasks'), where('assignedToUID', '==', user.uid)) : null;
+  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(myTasksQuery);
   
-  const { data: divisionMembers, loading: membersLoading } = useCollection<User>(
-    user && user.divisionId ? query('users', where('divisionId', '==', user.divisionId)) : null
-  );
+  const divisionMembersQuery = user && user.divisionId ? query(collection(firestore!, 'users'), where('divisionId', '==', user.divisionId)) : null;
+  const { data: divisionMembers, loading: membersLoading } = useCollection<User>(divisionMembersQuery);
 
   const otherDivisionMembers = divisionMembers?.filter(member => member.uid !== user?.uid);
 
@@ -126,3 +126,5 @@ function MemberSkeleton() {
         </div>
     )
 }
+
+    

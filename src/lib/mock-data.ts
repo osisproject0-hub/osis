@@ -1,4 +1,4 @@
-import type { User, Task } from './types';
+import type { User, Task, FundRequest, FinancialReport } from './types';
 
 // This data is now only used for initial user seeding/role lookup on first Google login.
 // All runtime data will be fetched from Firestore.
@@ -275,27 +275,4 @@ export const mockUsers: Omit<User, 'uid' | 'email' | 'name' | 'photoURL'> & { em
   },
 ];
 
-// This is now just for reference or seeding, not for runtime use.
-export const mockTasks: Task[] = [
-  {
-    id: 'task-01',
-    title: 'Review Proposal Kegiatan 17 Agustus',
-    description: 'Final check on budget and schedule for Independence Day events.',
-    assignedToUID: 'user-01',
-    assignedByName: 'System',
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 2)).toISOString(),
-    status: 'pending',
-    priority: 'urgent',
-  } as unknown as Task,
-  {
-    id: 'task-02',
-    title: 'Siapkan Laporan Keuangan Bulanan',
-    description: 'Compile all financial transactions for the month of July.',
-    assignedToUID: 'user-05',
-    assignedByName: 'Rizki Firmanto Putra',
-    divisionId: 'div-finance',
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 5)).toISOString(),
-    status: 'in-progress',
-    priority: 'high',
-  } as unknown as Task,
-];
+    
