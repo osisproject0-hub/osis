@@ -9,9 +9,13 @@ interface UserContextType {
   isLoading: boolean;
   login: (uid: string, password?: string) => boolean;
   logout: () => void;
+  updateUserPassword: (uid: string, currentPassword?: string, newPassword?: string) => boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
+
+// A copy of mockUsers to simulate a database that can be modified in memory.
+let userDatabase = [...mockUsers];
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -21,7 +25,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       const storedUserUid = localStorage.getItem('currentUserUid');
       if (storedUserUid) {
-        const foundUser = mockUsers.find(u => u.uid === storedUserUid);
+        const foundUser = userDatabase.find(u => u.uid === storedUserUid);
         setUser(foundUser || null);
       }
     } catch (error) {
@@ -31,7 +35,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback((uid: string, password?: string) => {
-    const foundUser = mockUsers.find(u => u.uid === uid);
+    const foundUser = userDatabase.find(u => u.uid === uid);
     if (foundUser && foundUser.password === password) {
       try {
         localStorage.setItem('currentUserUid', uid);
@@ -54,8 +58,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const updateUserPassword = useCallback((uid: string, currentPassword?: string, newPassword?: string) => {
+    const userIndex = userDatabase.findIndex(u => u.uid === uid);
+    if (userIndex !== -1) {
+      const userToUpdate = userDatabase[userIndex];
+      if (userToUpdate.password === currentPassword && newPassword) {
+        userDatabase[userIndex] = { ...userToUpdate, password: newPassword };
+        // We also update the currently logged-in user object if it matches
+        if(user?.uid === uid) {
+          setUser(userDatabase[userIndex]);
+        }
+        return true;
+      }
+    }
+    return false;
+  }, [user]);
+
+
   return (
-    <UserContext.Provider value={{ user, isLoading, login, logout }}>
+    <UserContext.Provider value={{ user, isLoading, login, logout, updateUserPassword }}>
       {children}
     </UserContext.Provider>
   );
