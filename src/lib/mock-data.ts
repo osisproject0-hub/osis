@@ -10,6 +10,7 @@ export const mockUsers: User[] = [
     position: 'Ketua OSIS',
     divisionName: 'Pengurus Inti',
     accessLevel: 10,
+    password: 'password123',
   },
   {
     uid: 'user-02',
@@ -19,6 +20,7 @@ export const mockUsers: User[] = [
     position: 'Wakil Ketua OSIS',
     divisionName: 'Pengurus Inti',
     accessLevel: 9,
+    password: 'password123',
   },
   {
     uid: 'user-03',
@@ -28,6 +30,7 @@ export const mockUsers: User[] = [
     position: 'Sekretaris 1',
     divisionName: 'Pengurus Inti',
     accessLevel: 8,
+    password: 'password123',
   },
   {
     uid: 'user-04',
@@ -37,6 +40,7 @@ export const mockUsers: User[] = [
     position: 'Sekretaris 2',
     divisionName: 'Pengurus Inti',
     accessLevel: 8,
+    password: 'password123',
   },
   {
     uid: 'user-05',
@@ -46,6 +50,7 @@ export const mockUsers: User[] = [
     position: 'Bendahara 1',
     divisionName: 'Pengurus Inti',
     accessLevel: 8,
+    password: 'password123',
   },
   {
     uid: 'user-06',
@@ -55,6 +60,7 @@ export const mockUsers: User[] = [
     position: 'Bendahara 2',
     divisionName: 'Pengurus Inti',
     accessLevel: 8,
+    password: 'password123',
   },
   // Divisi 1: Keimanan & Ketaqwaan
   {
@@ -66,6 +72,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-01',
     divisionName: 'Divisi Keimanan & Ketaqwaan',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-08',
@@ -76,6 +83,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-01',
     divisionName: 'Divisi Keimanan & Ketaqwaan',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-09',
@@ -86,6 +94,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-01',
     divisionName: 'Divisi Keimanan & Ketaqwaan',
     accessLevel: 5,
+    password: 'password123',
   },
   // Divisi 2: Organisasi & Arganisasi
   {
@@ -97,6 +106,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-02',
     divisionName: 'Divisi Organisasi & Arganisasi',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-11',
@@ -107,6 +117,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-02',
     divisionName: 'Divisi Organisasi & Arganisasi',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-12',
@@ -117,6 +128,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-02',
     divisionName: 'Divisi Organisasi & Arganisasi',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-13',
@@ -127,6 +139,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-02',
     divisionName: 'Divisi Organisasi & Arganisasi',
     accessLevel: 5,
+    password: 'password123',
   },
   // Divisi 3: Kehidupan Berbangsa & Bernegara
   {
@@ -138,6 +151,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-03',
     divisionName: 'Divisi Kehidupan Berbangsa & Bernegara',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-15',
@@ -148,6 +162,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-03',
     divisionName: 'Divisi Kehidupan Berbangsa & Bernegara',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-16',
@@ -158,6 +173,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-03',
     divisionName: 'Divisi Kehidupan Berbangsa & Bernegara',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-17',
@@ -168,6 +184,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-03',
     divisionName: 'Divisi Kehidupan Berbangsa & Bernegara',
     accessLevel: 5,
+    password: 'password123',
   },
   // Divisi 4: Dokumentasi & Kesenian
   {
@@ -179,6 +196,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-04',
     divisionName: 'Divisi Dokumentasi & Kesenian',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-19',
@@ -189,6 +207,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-04',
     divisionName: 'Divisi Dokumentasi & Kesenian',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-20',
@@ -199,6 +218,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-04',
     divisionName: 'Divisi Dokumentasi & Kesenian',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-21',
@@ -209,6 +229,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-04',
     divisionName: 'Divisi Dokumentasi & Kesenian',
     accessLevel: 5,
+    password: 'password123',
   },
   // Divisi 5: Olahraga
   {
@@ -220,6 +241,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-05',
     divisionName: 'Divisi Olahraga',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-23',
@@ -230,6 +252,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-05',
     divisionName: 'Divisi Olahraga',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-24',
@@ -240,6 +263,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-05',
     divisionName: 'Divisi Olahraga',
     accessLevel: 5,
+    password: 'password123',
   },
   // Divisi 6: Hubungan Masyarakat
   {
@@ -251,6 +275,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-06',
     divisionName: 'Divisi Hubungan Masyarakat',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-26',
@@ -261,6 +286,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-06',
     divisionName: 'Divisi Hubungan Masyarakat',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-27',
@@ -271,6 +297,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-06',
     divisionName: 'Divisi Hubungan Masyarakat',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-28',
@@ -281,6 +308,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-06',
     divisionName: 'Divisi Hubungan Masyarakat',
     accessLevel: 5,
+    password: 'password123',
   },
   // Divisi 7: Teknologi & Komunikasi
   {
@@ -292,6 +320,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-07',
     divisionName: 'Divisi Teknologi & Komunikasi',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-30',
@@ -302,6 +331,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-07',
     divisionName: 'Divisi Teknologi & Komunikasi',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-31',
@@ -312,6 +342,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-07',
     divisionName: 'Divisi Teknologi & Komunikasi',
     accessLevel: 5,
+    password: 'password123',
   },
   // Divisi 8: Keamanan & Ketertiban
   {
@@ -323,6 +354,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-08',
     divisionName: 'Divisi Keamanan & Ketertiban',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-33',
@@ -333,6 +365,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-08',
     divisionName: 'Divisi Keamanan & Ketertiban',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-34',
@@ -343,6 +376,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-08',
     divisionName: 'Divisi Keamanan & Ketertiban',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-35',
@@ -353,6 +387,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-08',
     divisionName: 'Divisi Keamanan & Ketertiban',
     accessLevel: 5,
+    password: 'password123',
   },
   // Divisi 9: Kesehatan
   {
@@ -364,6 +399,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-09',
     divisionName: 'Divisi Kesehatan',
     accessLevel: 7,
+    password: 'password123',
   },
   {
     uid: 'user-37',
@@ -374,6 +410,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-09',
     divisionName: 'Divisi Kesehatan',
     accessLevel: 5,
+    password: 'password123',
   },
   {
     uid: 'user-38',
@@ -384,6 +421,7 @@ export const mockUsers: User[] = [
     divisionId: 'div-09',
     divisionName: 'Divisi Kesehatan',
     accessLevel: 5,
+    password: 'password123',
   },
 ];
 

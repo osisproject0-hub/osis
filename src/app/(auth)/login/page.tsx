@@ -12,20 +12,34 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useUser();
+  const { toast } = useToast();
   const [selectedUser, setSelectedUser] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(false);
 
   const handleLogin = () => {
-    if (selectedUser) {
+    if (selectedUser && password) {
       setIsLoading(true);
-      login(selectedUser);
-      // Simulate network delay
+      const loginSuccess = login(selectedUser, password);
+
       setTimeout(() => {
-        router.push('/dashboard');
+        if (loginSuccess) {
+          router.push('/dashboard');
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Gagal Masuk',
+            description: 'Profil atau kata sandi tidak cocok.',
+          });
+          setIsLoading(false);
+        }
       }, 500);
     }
   };
@@ -56,33 +70,47 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <Select value={selectedUser} onValueChange={setSelectedUser}>
-                <SelectTrigger className="h-12 text-base">
-                  <SelectValue placeholder="Pilih profil untuk masuk..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {mockUsers.map((user) => (
-                    <SelectItem key={user.uid} value={user.uid}>
-                      <div className="flex items-center gap-3">
-                        <Image
-                          src={user.photoURL}
-                          alt={user.name}
-                          width={24}
-                          height={24}
-                          className="rounded-full"
-                        />
-                        <div>
-                          <p className="font-semibold">{user.name}</p>
-                          <p className="text-xs text-muted-foreground">{user.position}</p>
+              <div className="space-y-2">
+                <Label htmlFor="user-select">Profil Pengguna</Label>
+                <Select value={selectedUser} onValueChange={setSelectedUser}>
+                  <SelectTrigger id="user-select" className="h-12 text-base">
+                    <SelectValue placeholder="Pilih profil untuk masuk..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {mockUsers.map((user) => (
+                      <SelectItem key={user.uid} value={user.uid}>
+                        <div className="flex items-center gap-3">
+                          <Image
+                            src={user.photoURL}
+                            alt={user.name}
+                            width={24}
+                            height={24}
+                            className="rounded-full"
+                          />
+                          <div>
+                            <p className="font-semibold">{user.name}</p>
+                            <p className="text-xs text-muted-foreground">{user.position}</p>
+                          </div>
                         </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Kata Sandi</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Masukkan kata sandi..."
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-12"
+                />
+              </div>
               <Button
                 onClick={handleLogin}
-                disabled={!selectedUser || isLoading}
+                disabled={!selectedUser || !password || isLoading}
                 className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90"
                 size="lg"
               >

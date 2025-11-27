@@ -7,7 +7,7 @@ import { createContext, useContext, useState, useEffect, ReactNode, useCallback 
 interface UserContextType {
   user: User | null;
   isLoading: boolean;
-  login: (uid: string) => void;
+  login: (uid: string, password?: string) => boolean;
   logout: () => void;
 }
 
@@ -30,16 +30,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = useCallback((uid: string) => {
+  const login = useCallback((uid: string, password?: string) => {
     const foundUser = mockUsers.find(u => u.uid === uid);
-    if (foundUser) {
+    if (foundUser && foundUser.password === password) {
       try {
         localStorage.setItem('currentUserUid', uid);
         setUser(foundUser);
+        return true;
       } catch (error) {
         console.error("Could not access localStorage", error);
+        return false;
       }
     }
+    return false;
   }, []);
 
   const logout = useCallback(() => {

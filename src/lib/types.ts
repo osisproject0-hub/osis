@@ -7,6 +7,7 @@ export interface User {
   divisionId?: string;
   divisionName: string;
   accessLevel: number;
+  password?: string;
 }
 
 export type UserPosition =
