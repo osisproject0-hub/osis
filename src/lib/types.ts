@@ -18,8 +18,22 @@ export type UserPosition =
   | 'Bendahara 2'
   | 'Ketua Divisi Keimanan & Ketaqwaan'
   | 'Anggota Divisi Keimanan & Ketaqwaan'
-  | 'Ketua Divisi Teknologi dan Komunikasi'
-  | 'Anggota Divisi Teknologi dan Komunikasi';
+  | 'Ketua Divisi Organisasi & Arganisasi'
+  | 'Anggota Divisi Organisasi & Arganisasi'
+  | 'Ketua Divisi Kehidupan Berbangsa & Bernegara'
+  | 'Anggota Divisi Kehidupan Berbangsa & Bernegara'
+  | 'Ketua Divisi Dokumentasi & Kesenian'
+  | 'Anggota Divisi Dokumentasi & Kesenian'
+  | 'Ketua Divisi Olahraga'
+  | 'Anggota Divisi Olahraga'
+  | 'Ketua Divisi Hubungan Masyarakat'
+  | 'Anggota Divisi Hubungan Masyarakat'
+  | 'Ketua Divisi Teknologi & Komunikasi'
+  | 'Anggota Divisi Teknologi & Komunikasi'
+  | 'Ketua Divisi Keamanan & Ketertiban'
+  | 'Anggota Divisi Keamanan & Ketertiban'
+  | 'Ketua Divisi Kesehatan'
+  | 'Anggota Divisi Kesehatan';
 
 export interface Task {
   id: string;
