@@ -1,8 +1,8 @@
-import type { User, Task, FundRequest, FinancialReport } from './types';
+import type { User } from './types';
 
-// This data is now only used for initial user seeding/role lookup on first Google login.
+// This data is now only used for initial user seeding/role lookup on first login.
 // All runtime data will be fetched from Firestore.
-export const mockUsers: Omit<User, 'uid' | 'email' | 'name' | 'photoURL'> & { email: string }[] = [
+export const mockUsers: Omit<User, 'uid' | 'name' | 'photoURL'> & { email: string }[] = [
   // Pengurus Inti
   {
     email: 'rizki.putra@sekolah.id',
@@ -274,5 +274,3 @@ export const mockUsers: Omit<User, 'uid' | 'email' | 'name' | 'photoURL'> & { em
     accessLevel: 5,
   },
 ];
-
-    

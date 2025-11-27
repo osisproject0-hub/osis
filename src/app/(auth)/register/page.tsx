@@ -5,13 +5,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Bot, Loader2 } from 'lucide-react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useFirestore, useUser } from '@/firebase';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { mockUsers } from '@/lib/mock-data';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,31 +21,34 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 
-const loginSchema = z.object({
+const registerSchema = z.object({
+  name: z.string().min(3, { message: 'Nama lengkap minimal 3 karakter.' }),
   email: z.string().email({ message: 'Alamat email tidak valid.' }),
   password: z.string().min(6, { message: 'Kata sandi minimal 6 karakter.' }),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const auth = useAuth();
+  const firestore = useFirestore();
   const { user, isLoading: isUserLoading } = useUser();
   const { toast } = useToast();
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
     },
   });
 
-  const firebaseReady = !!auth;
-  const isLoggingIn = form.formState.isSubmitting;
+  const firebaseReady = !!auth && !!firestore;
+  const isRegistering = form.formState.isSubmitting;
 
-  const handleLogin = async (data: LoginFormValues) => {
+  const handleRegister = async (data: RegisterFormValues) => {
     if (!firebaseReady) {
       toast({
         variant: 'destructive',
@@ -54,20 +59,58 @@ export default function LoginPage() {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const newUser = userCredential.user;
+
+      // Update Firebase Auth profile
+      await updateProfile(newUser, {
+        displayName: data.name,
+      });
+
+      // Check if user email is in mock data to assign a role
+      const mockUser = mockUsers.find(u => u.email.toLowerCase() === data.email.toLowerCase());
+      
+      const userRef = doc(firestore, 'users', newUser.uid);
+
+      if (mockUser) {
+        await setDoc(userRef, {
+          uid: newUser.uid,
+          email: newUser.email,
+          name: data.name,
+          photoURL: null,
+          position: mockUser.position,
+          divisionId: mockUser.divisionId || null,
+          divisionName: mockUser.divisionName,
+          accessLevel: mockUser.accessLevel,
+        });
+      } else {
+        // Default role for new users not in the mock list
+        await setDoc(userRef, {
+          uid: newUser.uid,
+          email: newUser.email,
+          name: data.name,
+          photoURL: null,
+          position: 'Anggota Divisi Kesehatan', // Default role
+          divisionId: 'div-09',
+          divisionName: 'Divisi Kesehatan',
+          accessLevel: 1, // Lowest access level
+        });
+      }
+
       router.push('/dashboard');
       toast({
-        title: 'Berhasil Masuk',
-        description: 'Selamat datang kembali!',
+        title: 'Pendaftaran Berhasil',
+        description: 'Akun Anda telah berhasil dibuat.',
       });
+
     } catch (error: any) {
-      let description = 'Terjadi kesalahan saat mencoba masuk.';
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        description = 'Email atau kata sandi yang Anda masukkan salah.';
+      let description = 'Terjadi kesalahan saat mendaftar.';
+      if (error.code === 'auth/email-already-in-use') {
+        description = 'Alamat email ini sudah terdaftar. Silakan coba masuk.';
       }
       toast({
         variant: 'destructive',
-        title: 'Gagal Masuk',
+        title: 'Gagal Mendaftar',
         description: description,
       });
     }
@@ -81,7 +124,7 @@ export default function LoginPage() {
 
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
   
-  const isLoading = isLoggingIn || isUserLoading || !firebaseReady;
+  const isLoading = isRegistering || isUserLoading || !firebaseReady;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
@@ -102,12 +145,25 @@ export default function LoginPage() {
             <div className="mx-auto mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
                 <Bot className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="font-headline text-4xl">Nusantara OSIS Hub</CardTitle>
-            <CardDescription className="pt-2">Digital Command Center</CardDescription>
+            <CardTitle className="font-headline text-4xl">Buat Akun</CardTitle>
+            <CardDescription className="pt-2">Daftar untuk mengakses Nusantara OSIS Hub</CardDescription>
           </CardHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleLogin)}>
+            <form onSubmit={form.handleSubmit(handleRegister)}>
               <CardContent className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nama Lengkap</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Nama Anda" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -135,16 +191,16 @@ export default function LoginPage() {
                   )}
                 />
                  <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
-                  {isLoading ? <Loader2 className="animate-spin" /> : 'Masuk'}
+                  {isLoading ? <Loader2 className="animate-spin" /> : 'Daftar'}
                 </Button>
               </CardContent>
             </form>
           </Form>
           <CardFooter className="flex flex-col items-center justify-center text-sm">
              <p className="text-muted-foreground">
-                Belum punya akun?{' '}
-                <Link href="/register" className="font-semibold text-primary hover:underline">
-                    Daftar di sini
+                Sudah punya akun?{' '}
+                <Link href="/login" className="font-semibold text-primary hover:underline">
+                    Masuk di sini
                 </Link>
              </p>
           </CardFooter>
