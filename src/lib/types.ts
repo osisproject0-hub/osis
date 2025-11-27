@@ -1,4 +1,4 @@
-import { DocumentReference } from "firebase/firestore";
+import { DocumentReference, Timestamp } from "firebase/firestore";
 
 export interface User {
   id?: string; // Firestore document ID
@@ -43,11 +43,11 @@ export interface Task {
   title: string;
   description: string;
   assignedToUID: string;
-  assignedToRef: DocumentReference<User>;
+  assignedToName: string;
   assignedByName: string;
-  assignedByRef: DocumentReference<User>;
   divisionId?: string;
-  dueDate: string;
+  dueDate: Timestamp | string; // Can be a string when creating, but is a Timestamp from Firestore
+  createdAt: Timestamp;
   status: 'pending' | 'in-progress' | 'completed' | 'overdue';
   priority: 'low' | 'medium' | 'high' | 'urgent';
 }
@@ -59,13 +59,16 @@ export interface FundRequest {
   amount: number;
   status: 'Pending' | 'Approved' | 'Rejected';
   requestedBy: DocumentReference<User>;
+  requestedByName: string;
+  createdAt: Timestamp;
 }
 
 export interface FinancialReport {
     id?: string;
-    date: string;
+    date: Timestamp | string;
     description: string;
     type: 'Pemasukan' | 'Pengeluaran';
     amount: number;
     recordedBy: DocumentReference<User>;
+    recordedByName: string;
 }

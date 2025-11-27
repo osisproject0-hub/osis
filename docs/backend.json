@@ -50,15 +50,15 @@
             "title": { "type": "string" },
             "description": { "type": "string" },
             "assignedToUID": { "type": "string" },
-            "assignedToRef": { "$ref": "#/entities/user" },
+            "assignedToName": { "type": "string" },
             "assignedByName": { "type": "string" },
-            "assignedByRef": { "$ref": "#/entities/user" },
             "divisionId": { "type": "string" },
             "dueDate": { "type": "string", "format": "date-time" },
+            "createdAt": { "type": "string", "format": "date-time" },
             "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "overdue"] },
             "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] }
         },
-        "required": ["title", "assignedToUID", "assignedByName", "dueDate", "status", "priority"]
+        "required": ["title", "assignedToUID", "assignedToName", "assignedByName", "dueDate", "createdAt", "status", "priority"]
     },
     "fundRequest": {
         "title": "Fund Request",
@@ -69,9 +69,11 @@
             "item": { "type": "string" },
             "amount": { "type": "number" },
             "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
-            "requestedBy": { "$ref": "#/entities/user" }
+            "requestedBy": { "$ref": "#/entities/user" },
+            "requestedByName": { "type": "string" },
+            "createdAt": { "type": "string", "format": "date-time" }
         },
-        "required": ["division", "item", "amount", "status", "requestedBy"]
+        "required": ["division", "item", "amount", "status", "requestedBy", "requestedByName", "createdAt"]
     },
     "financialReport": {
         "title": "Financial Report",
@@ -82,9 +84,10 @@
             "description": { "type": "string" },
             "type": { "type": "string", "enum": ["Pemasukan", "Pengeluaran"] },
             "amount": { "type": "number" },
-            "recordedBy": { "$ref": "#/entities/user" }
+            "recordedBy": { "$ref": "#/entities/user" },
+            "recordedByName": { "type": "string" }
         },
-        "required": ["date", "description", "type", "amount", "recordedBy"]
+        "required": ["date", "description", "type", "amount", "recordedBy", "recordedByName"]
     }
   },
   "auth": {
