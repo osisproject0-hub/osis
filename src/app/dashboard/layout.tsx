@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, redirect } from 'next/navigation';
 
-import { useUser } from '@/context/user-context';
+import { useUser } from '@/firebase';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';

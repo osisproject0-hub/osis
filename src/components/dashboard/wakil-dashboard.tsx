@@ -1,10 +1,18 @@
-import { useUser } from '@/context/user-context';
-import { mockTasks } from '@/lib/mock-data';
+'use client';
+
+import { useUser, useCollection } from '@/firebase';
+import { query, where } from 'firebase/firestore';
+import type { Task } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
 
 export function WakilDashboard() {
   const { user } = useUser();
-  const myTasks = mockTasks.filter(task => task.assignedToUID === user?.uid);
+  const { data: myTasks, loading: myTasksLoading } = useCollection<Task>(
+    user ? query('tasks', where('assignedToUID', '==', user.uid)) : null
+  );
+  const { data: allOngoingTasks, loading: allTasksLoading } = useCollection<Task>(
+    query('tasks', where('status', '!=', 'completed'))
+  );
 
   return (
     <div className="space-y-6">
@@ -15,8 +23,8 @@ export function WakilDashboard() {
         Monitoring synchronization and delegated tasks.
       </p>
 
-      <TasksTable tasks={myTasks} title="My Delegated Tasks" />
-      <TasksTable tasks={mockTasks.filter(t => t.status !== 'completed')} title="All Ongoing Tasks" />
+      <TasksTable tasks={myTasks || []} title="My Delegated Tasks" isLoading={myTasksLoading} />
+      <TasksTable tasks={allOngoingTasks || []} title="All Ongoing Tasks" isLoading={allTasksLoading} />
     </div>
   );
 }

@@ -1,17 +1,24 @@
+'use client';
+
 import { FileCheck, Users, Wallet, BarChart } from 'lucide-react';
-import { useUser } from '@/context/user-context';
-import { mockTasks } from '@/lib/mock-data';
+import { useUser, useCollection } from '@/firebase';
+import { query, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIBriefing } from '@/components/dashboard/ai-briefing';
 import { TasksTable } from '@/components/tasks-table';
+import type { Task } from '@/lib/types';
+
 
 export function KetuaDashboard() {
   const { user } = useUser();
-  const myTasks = mockTasks.filter(task => task.assignedToUID === user?.uid);
+  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(
+    user ? query('tasks', where('assignedToUID', '==', user.uid)) : null
+  );
 
+  // In a real app, these stats would come from Firestore queries
   const stats = [
     { title: 'Pending Approvals', value: '3', icon: FileCheck },
-    { title: 'Active Divisions', value: '8', icon: Users },
+    { title: 'Active Divisions', value: '9', icon: Users },
     { title: 'Budget Remaining', value: 'Rp 15.2M', icon: Wallet },
     { title: 'Overall Progress', value: '76%', icon: BarChart },
   ];
@@ -39,7 +46,7 @@ export function KetuaDashboard() {
           ))}
         </div>
 
-        <TasksTable tasks={myTasks} title="My Priority Tasks" />
+        <TasksTable tasks={myTasks || []} title="My Priority Tasks" isLoading={tasksLoading} />
       </div>
     </div>
   );

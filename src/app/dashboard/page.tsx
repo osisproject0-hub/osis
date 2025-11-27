@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from '@/context/user-context';
+import { useUser } from '@/firebase';
 import { KetuaDashboard } from '@/components/dashboard/ketua-dashboard';
 import { WakilDashboard } from '@/components/dashboard/wakil-dashboard';
 import { SekretarisDashboard } from '@/components/dashboard/sekretaris-dashboard';
@@ -9,9 +9,9 @@ import { AnggotaDashboard } from '@/components/dashboard/anggota-dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardPage() {
-  const { user } = useUser();
+  const { user, isLoading } = useUser();
   
-  if (!user) {
+  if (isLoading || !user) {
     return (
         <div className="space-y-4">
             <Skeleton className="h-12 w-1/4" />

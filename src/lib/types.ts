@@ -1,13 +1,15 @@
+import { DocumentReference } from "firebase/firestore";
+
 export interface User {
+  id?: string; // Firestore document ID
   uid: string;
-  email: string;
+  email: string | null;
   name: string;
-  photoURL: string;
+  photoURL: string | null;
   position: UserPosition;
   divisionId?: string;
   divisionName: string;
   accessLevel: number;
-  password?: string;
 }
 
 export type UserPosition =
@@ -37,13 +39,33 @@ export type UserPosition =
   | 'Anggota Divisi Kesehatan';
 
 export interface Task {
-  id: string;
+  id?: string; // Firestore document ID
   title: string;
   description: string;
   assignedToUID: string;
+  assignedToRef: DocumentReference<User>;
   assignedByName: string;
+  assignedByRef: DocumentReference<User>;
   divisionId?: string;
   dueDate: string;
   status: 'pending' | 'in-progress' | 'completed' | 'overdue';
   priority: 'low' | 'medium' | 'high' | 'urgent';
+}
+
+export interface FundRequest {
+  id?: string;
+  division: string;
+  item: string;
+  amount: number;
+  status: 'Pending' | 'Approved' | 'Rejected';
+  requestedBy: DocumentReference<User>;
+}
+
+export interface FinancialReport {
+    id?: string;
+    date: string;
+    description: string;
+    type: 'Pemasukan' | 'Pengeluaran';
+    amount: number;
+    recordedBy: DocumentReference<User>;
 }

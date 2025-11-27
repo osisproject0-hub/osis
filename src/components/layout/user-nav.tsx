@@ -1,10 +1,12 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
+import { signOut } from 'firebase/auth';
 
-import { useUser } from '@/context/user-context';
+import { useUser, useAuth } from '@/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,22 +18,38 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
 
 export function UserNav() {
-  const { user, logout } = useUser();
+  const { user, isLoading } = useUser();
+  const auth = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
 
-  const handleLogout = () => {
-    logout();
-    router.push('/login');
+  const handleLogout = async () => {
+    if (!auth) return;
+    try {
+      await signOut(auth);
+      router.push('/login');
+       toast({
+        title: 'Berhasil Keluar',
+        description: 'Anda telah berhasil keluar dari akun Anda.',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Gagal Keluar',
+        description: 'Terjadi kesalahan saat mencoba keluar.',
+      });
+    }
   };
 
-  if (!user) {
+  if (isLoading || !user) {
     return null;
   }
   
   const fallbackInitials = user.name
-    .split(' ')
+    ?.split(' ')
     .map((n) => n[0])
     .join('')
     .substring(0, 2);
@@ -41,9 +59,9 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-10 w-10 rounded-full">
           <Avatar className="h-10 w-10">
-            <AvatarImage asChild src={user.photoURL}>
-                <Image src={user.photoURL} alt={user.name} width={40} height={40} />
-            </AvatarImage>
+            {user.photoURL && <AvatarImage asChild src={user.photoURL}>
+                <Image src={user.photoURL} alt={user.name || 'Avatar'} width={40} height={40} />
+            </AvatarImage>}
             <AvatarFallback>{fallbackInitials}</AvatarFallback>
           </Avatar>
         </Button>
@@ -57,14 +75,12 @@ export function UserNav() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <UserIcon />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings />
-            <span>Settings</span>
-          </DropdownMenuItem>
+          <Link href="/dashboard/settings" passHref>
+            <DropdownMenuItem>
+              <Settings />
+              <span>Settings</span>
+            </DropdownMenuItem>
+          </Link>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

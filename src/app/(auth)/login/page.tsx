@@ -3,46 +3,87 @@
 import * as React from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Bot, ChevronRight } from 'lucide-react';
+import { Bot, User as UserIcon } from 'lucide-react';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 
-import { useUser } from '@/context/user-context';
-import { mockUsers } from '@/lib/mock-data';
+import { useAuth, useFirestore, useUser } from '@/firebase';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { mockUsers } from '@/lib/mock-data';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useUser();
+  const auth = useAuth();
+  const firestore = useFirestore();
+  const { user, isLoading: isUserLoading } = useUser();
   const { toast } = useToast();
-  const [selectedUser, setSelectedUser] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoggingIn, setIsLoggingIn] = React.useState(false);
 
-  const handleLogin = () => {
-    if (selectedUser && password) {
-      setIsLoading(true);
-      const loginSuccess = login(selectedUser, password);
+  const handleLogin = async () => {
+    if (!auth || !firestore) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Firebase not initialized. Please try again later.',
+      });
+      return;
+    }
+    setIsLoggingIn(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const googleUser = result.user;
 
-      setTimeout(() => {
-        if (loginSuccess) {
-          router.push('/dashboard');
-        } else {
-          toast({
-            variant: 'destructive',
-            title: 'Gagal Masuk',
-            description: 'Profil atau kata sandi tidak cocok.',
-          });
-          setIsLoading(false);
-        }
-      }, 500);
+      // Find the corresponding mock user to get role details
+      // In a real app, you would have a user management system
+      const mockUser = mockUsers.find(u => u.email.split('@')[0] === googleUser.email?.split('@')[0]);
+
+      if (mockUser) {
+        const userRef = doc(firestore, 'users', googleUser.uid);
+        await setDoc(userRef, {
+          uid: googleUser.uid,
+          email: googleUser.email,
+          name: googleUser.displayName,
+          photoURL: googleUser.photoURL,
+          position: mockUser.position,
+          divisionId: mockUser.divisionId || null,
+          divisionName: mockUser.divisionName,
+          accessLevel: mockUser.accessLevel,
+        }, { merge: true });
+      } else {
+        // Handle case where user is not in the mock data
+         await setDoc(doc(firestore, 'users', googleUser.uid), {
+            uid: googleUser.uid,
+            email: googleUser.email,
+            name: googleUser.displayName,
+            photoURL: googleUser.photoURL,
+            position: 'Anggota Divisi Kesehatan',
+            divisionId: 'div-09',
+            divisionName: 'Divisi Kesehatan',
+            accessLevel: 1,
+        }, { merge: true });
+      }
+
+      router.push('/dashboard');
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Gagal Masuk',
+        description: error.message || 'Terjadi kesalahan saat mencoba masuk.',
+      });
+      setIsLoggingIn(false);
     }
   };
+
+  React.useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isUserLoading, router]);
   
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
 
@@ -69,55 +110,20 @@ export default function LoginPage() {
             <CardDescription className="pt-2">Digital Command Center</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="user-select">Profil Pengguna</Label>
-                <Select value={selectedUser} onValueChange={setSelectedUser}>
-                  <SelectTrigger id="user-select" className="h-12 text-base">
-                    <SelectValue placeholder="Pilih profil untuk masuk..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mockUsers.map((user) => (
-                      <SelectItem key={user.uid} value={user.uid}>
-                        <div className="flex items-center gap-3">
-                          <Image
-                            src={user.photoURL}
-                            alt={user.name}
-                            width={24}
-                            height={24}
-                            className="rounded-full"
-                          />
-                          <div>
-                            <p className="font-semibold">{user.name}</p>
-                            <p className="text-xs text-muted-foreground">{user.position}</p>
-                          </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Kata Sandi</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Masukkan kata sandi..."
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12"
-                />
-              </div>
-              <Button
+            <Button
                 onClick={handleLogin}
-                disabled={!selectedUser || !password || isLoading}
+                disabled={isLoggingIn || isUserLoading}
                 className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90"
                 size="lg"
               >
-                {isLoading ? 'Loading...' : 'Masuk ke Dashboard'}
-                {!isLoading && <ChevronRight className="ml-2 h-5 w-5" />}
-              </Button>
-            </div>
+                {isLoggingIn || isUserLoading ? 'Loading...' : (
+                  <>
+                    <svg className="mr-2 h-5 w-5" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 23.4 172.9 61.9l-76.2 76.2C313.6 113.4 283.6 96 248 96c-88.8 0-160.1 71.1-160.1 160s71.3 160 160.1 160c98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 26.9 3.9 41.4z"></path></svg>
+                    Masuk dengan Google
+                  </>
+                )}
+            </Button>
+            <p className='text-xs text-muted-foreground text-center mt-4'>Gunakan akun email sekolah Anda untuk masuk.</p>
           </CardContent>
         </Card>
       </div>

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bot, LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase } from 'lucide-react';
 
-import { useUser } from '@/context/user-context';
+import { useUser } from '@/firebase';
 import {
   Sidebar,
   SidebarContent,

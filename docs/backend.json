@@ -1,0 +1,111 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "A user of the application.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "The user's unique ID."
+        },
+        "email": {
+          "type": "string",
+          "description": "The user's email address.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "The URL of the user's profile picture.",
+          "format": "uri"
+        },
+        "position": {
+          "type": "string",
+          "description": "The user's position in the OSIS organization."
+        },
+        "divisionId": {
+          "type": "string",
+          "description": "The ID of the division the user belongs to."
+        },
+        "divisionName": {
+          "type": "string",
+          "description": "The name of the division the user belongs to."
+        },
+        "accessLevel": {
+          "type": "number",
+          "description": "The user's access level, determining their permissions."
+        }
+      },
+      "required": ["uid", "email", "name", "position", "divisionName", "accessLevel"]
+    },
+    "task": {
+        "title": "Task",
+        "description": "A task assigned to a user.",
+        "type": "object",
+        "properties": {
+            "title": { "type": "string" },
+            "description": { "type": "string" },
+            "assignedToUID": { "type": "string" },
+            "assignedToRef": { "$ref": "#/entities/user" },
+            "assignedByName": { "type": "string" },
+            "assignedByRef": { "$ref": "#/entities/user" },
+            "divisionId": { "type": "string" },
+            "dueDate": { "type": "string", "format": "date-time" },
+            "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "overdue"] },
+            "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] }
+        },
+        "required": ["title", "assignedToUID", "assignedByName", "dueDate", "status", "priority"]
+    },
+    "fundRequest": {
+        "title": "Fund Request",
+        "description": "A request for funds from a division.",
+        "type": "object",
+        "properties": {
+            "division": { "type": "string" },
+            "item": { "type": "string" },
+            "amount": { "type": "number" },
+            "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+            "requestedBy": { "$ref": "#/entities/user" }
+        },
+        "required": ["division", "item", "amount", "status", "requestedBy"]
+    },
+    "financialReport": {
+        "title": "Financial Report",
+        "description": "A record of a financial transaction.",
+        "type": "object",
+        "properties": {
+            "date": { "type": "string", "format": "date-time" },
+            "description": { "type": "string" },
+            "type": { "type": "string", "enum": ["Pemasukan", "Pengeluaran"] },
+            "amount": { "type": "number" },
+            "recordedBy": { "$ref": "#/entities/user" }
+        },
+        "required": ["date", "description", "type", "amount", "recordedBy"]
+    }
+  },
+  "auth": {
+    "providers": ["google.com"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/user" },
+      "description": "Stores public information about a user."
+    },
+    "/tasks/{taskId}": {
+        "schema": { "$ref": "#/entities/task" },
+        "description": "Stores tasks for the OSIS members."
+    },
+    "/fundRequests/{requestId}": {
+        "schema": { "$ref": "#/entities/fundRequest" },
+        "description": "Stores fund requests from various divisions."
+    },
+    "/financialReports/{reportId}": {
+        "schema": { "$ref": "#/entities/financialReport" },
+        "description": "Stores all financial transactions."
+    }
+  }
+}

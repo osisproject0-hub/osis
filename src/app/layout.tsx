@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { UserProvider } from '@/context/user-context';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
 import './globals.css';
@@ -24,9 +24,9 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet" />
       </head>
       <body className={cn("font-body antialiased min-h-screen")}>
-        <UserProvider>
+        <FirebaseClientProvider>
           {children}
-        </UserProvider>
+        </FirebaseClientProvider>
         <Toaster />
       </body>
     </html>

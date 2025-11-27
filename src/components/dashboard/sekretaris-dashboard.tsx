@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
-import { useUser } from '@/context/user-context';
-import { mockTasks } from '@/lib/mock-data';
+import { useUser, useCollection } from '@/firebase';
+import { query, where } from 'firebase/firestore';
+import type { Task } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +11,9 @@ import { BookText } from 'lucide-react';
 
 export function SekretarisDashboard() {
   const { user } = useUser();
-  const myTasks = mockTasks.filter(task => task.assignedToUID === user?.uid);
+  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(
+    user ? query('tasks', where('assignedToUID', '==', user.uid)) : null
+  );
 
   return (
     <div className="space-y-6">
@@ -36,7 +41,7 @@ export function SekretarisDashboard() {
         </CardContent>
       </Card>
 
-      <TasksTable tasks={myTasks} title="My Documentation Tasks" />
+      <TasksTable tasks={myTasks || []} title="My Documentation Tasks" isLoading={tasksLoading} />
     </div>
   );
 }

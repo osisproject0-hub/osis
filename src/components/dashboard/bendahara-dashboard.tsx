@@ -1,14 +1,18 @@
+'use client';
 import Link from 'next/link';
-import { useUser } from '@/context/user-context';
-import { mockTasks } from '@/lib/mock-data';
+import { useUser, useCollection } from '@/firebase';
+import { query, where } from 'firebase/firestore';
+import type { Task } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '../ui/button';
 import { DollarSign } from 'lucide-react';
 
 export function BendaharaDashboard() {
   const { user } = useUser();
-  const myTasks = mockTasks.filter(task => task.assignedToUID === user?.uid);
+  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(
+    user ? query('tasks', where('assignedToUID', '==', user.uid)) : null
+  );
 
   const stats = [
     { title: 'Total Dana Masuk', value: 'Rp 25.5M' },
@@ -49,7 +53,7 @@ export function BendaharaDashboard() {
         ))}
       </div>
       
-      <TasksTable tasks={myTasks} title="My Financial Tasks" />
+      <TasksTable tasks={myTasks || []} title="My Financial Tasks" isLoading={tasksLoading} />
     </div>
   );
 }

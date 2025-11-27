@@ -1,7 +1,6 @@
 'use client';
 
-import { useUser } from '@/context/user-context';
-import { mockUsers } from '@/lib/mock-data';
+import { useCollection, useUser } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -14,12 +13,15 @@ import {
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ShieldAlert } from 'lucide-react';
+import { ShieldAlert, Users } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import type { User as UserType } from '@/lib/types';
 
 export default function MembersPage() {
-  const { user } = useUser();
+  const { user: currentUser } = useUser();
+  const { data: members, loading } = useCollection<UserType>('users');
 
-  if (!user || user.accessLevel < 9) {
+  if (!currentUser || currentUser.accessLevel < 9) {
     return (
       <Alert variant="destructive">
         <ShieldAlert className="h-4 w-4" />
@@ -38,48 +40,58 @@ export default function MembersPage() {
         <CardHeader>
           <CardTitle>Daftar Anggota OSIS</CardTitle>
           <CardDescription>
-            Berikut adalah daftar semua anggota OSIS beserta posisi dan kata sandi mereka.
+            Berikut adalah daftar semua anggota OSIS beserta posisi dan divisi mereka.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nama</TableHead>
-                <TableHead>Posisi</TableHead>
-                <TableHead>Divisi</TableHead>
-                <TableHead>Kata Sandi</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {mockUsers.map((member) => (
-                <TableRow key={member.uid}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src={member.photoURL}
-                        alt={member.name}
-                        width={32}
-                        height={32}
-                        className="rounded-full"
-                      />
-                      <div>
-                        <p className="font-semibold">{member.name}</p>
-                        <p className="text-xs text-muted-foreground">{member.email}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{member.position}</TableCell>
-                  <TableCell>
-                    <Badge variant="secondary">{member.divisionName}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="font-code">{member.password}</Badge>
-                  </TableCell>
+          {loading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nama</TableHead>
+                  <TableHead>Posisi</TableHead>
+                  <TableHead>Divisi</TableHead>
+                  <TableHead>Tingkat Akses</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {members?.sort((a, b) => b.accessLevel - a.accessLevel).map((member) => (
+                  <TableRow key={member.uid}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {member.photoURL && (
+                          <Image
+                            src={member.photoURL}
+                            alt={member.name || 'Avatar'}
+                            width={32}
+                            height={32}
+                            className="rounded-full"
+                          />
+                        )}
+                        <div>
+                          <p className="font-semibold">{member.name}</p>
+                          <p className="text-xs text-muted-foreground">{member.email}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{member.position}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{member.divisionName}</Badge>
+                    </TableCell>
+                    <TableCell>
+                        {member.accessLevel}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
