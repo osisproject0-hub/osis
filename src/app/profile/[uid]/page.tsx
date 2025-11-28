@@ -35,7 +35,7 @@ export default function UserProfilePage() {
     if (!user) {
         return (
              <div className="flex flex-col items-center justify-center min-h-screen bg-background text-center p-4">
-                <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={64} height={64} className="mb-4 text-muted-foreground rounded-full object-cover"/>
+                <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={64} height={64} className="mb-4 text-muted-foreground"/>
                 <h1 className="text-2xl font-bold">Pengguna tidak ditemukan</h1>
                 <p className="text-muted-foreground">Profil yang Anda cari tidak ada atau telah dihapus.</p>
                  <Link href="/portal" className="mt-6">
@@ -52,7 +52,7 @@ export default function UserProfilePage() {
         <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
             <div className="container mx-auto flex justify-between items-center">
                  <Link href="/portal" className="flex items-center gap-2">
-                    <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={32} height={32} className="rounded-full object-cover"/>
+                    <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={32} height={32}/>
                     <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
                 </Link>
                  <Link href="/login" >
