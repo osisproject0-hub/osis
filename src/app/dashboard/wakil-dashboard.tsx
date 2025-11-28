@@ -7,7 +7,7 @@ import type { Task, User as UserType } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
-import { AddTaskDialog } from '../add-task-dialog';
+import { AddTaskDialog } from '@/components/add-task-dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function WakilDashboard() {

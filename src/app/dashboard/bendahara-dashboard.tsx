@@ -6,9 +6,9 @@ import { collection, query, where } from 'firebase/firestore';
 import type { Task, User as UserType } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { DollarSign, PlusCircle } from 'lucide-react';
-import { AddTaskDialog } from '../add-task-dialog';
+import { AddTaskDialog } from '@/components/add-task-dialog';
 
 export function BendaharaDashboard() {
   const { user } = useUser();

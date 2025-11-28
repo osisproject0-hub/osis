@@ -9,7 +9,7 @@ import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BookText, PlusCircle } from 'lucide-react';
-import { AddTaskDialog } from '../add-task-dialog';
+import { AddTaskDialog } from '@/components/add-task-dialog';
 
 export function SekretarisDashboard() {
   const { user } = useUser();

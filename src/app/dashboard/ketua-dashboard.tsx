@@ -8,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIBriefing } from '@/components/dashboard/ai-briefing';
 import { TasksTable } from '@/components/tasks-table';
 import type { Task, User as UserType } from '@/lib/types';
-import { AddTaskDialog } from '../add-task-dialog';
-import { Button } from '../ui/button';
+import { AddTaskDialog } from '@/components/add-task-dialog';
+import { Button } from '@/components/ui/button';
 
 export function KetuaDashboard() {
   const { user } = useUser();
