@@ -107,6 +107,8 @@ export default function RegisterPage() {
       let description = 'Terjadi kesalahan saat mendaftar.';
       if (error.code === 'auth/email-already-in-use') {
         description = 'Alamat email ini sudah terdaftar. Silakan coba masuk.';
+      } else if (error.code === 'auth/configuration-not-found') {
+        description = 'Konfigurasi Firebase tidak ditemukan. Silakan refresh dan coba lagi.';
       }
       console.error("Registration Error: ", error);
       toast({
@@ -125,7 +127,28 @@ export default function RegisterPage() {
 
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
   
-  const isLoading = isRegistering || isUserLoading || !firebaseReady;
+  const isLoading = isRegistering || isUserLoading;
+  
+  const getButtonContent = () => {
+    if (!firebaseReady) {
+      return (
+        <>
+          <Loader2 className="animate-spin" />
+          Initializing Firebase...
+        </>
+      );
+    }
+    if (isLoading) {
+      return (
+        <>
+          <Loader2 className="animate-spin" />
+          Mendaftar...
+        </>
+      );
+    }
+    return 'Daftar';
+  };
+
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
@@ -191,8 +214,8 @@ export default function RegisterPage() {
                     </FormItem>
                   )}
                 />
-                 <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
-                  {isLoading ? <Loader2 className="animate-spin" /> : 'Daftar'}
+                 <Button type="submit" disabled={isLoading || !firebaseReady} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
+                   {getButtonContent()}
                 </Button>
               </CardContent>
             </form>
