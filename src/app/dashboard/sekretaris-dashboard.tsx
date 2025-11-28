@@ -8,7 +8,7 @@ import type { Task, User as UserType } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BookText, PlusCircle, FileSignature } from 'lucide-react';
+import { BookText, FileSignature } from 'lucide-react';
 import { AddTaskDialog } from '@/components/add-task-dialog';
 
 export function SekretarisDashboard() {
@@ -37,10 +37,6 @@ export function SekretarisDashboard() {
                     Kelola notulen, surat resmi, dan laporan.
                 </p>
             </div>
-            <Button onClick={() => setIsAddTaskOpen(true)}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Tambah Tugas Baru
-            </Button>
         </div>
       
       <div className='grid md:grid-cols-2 gap-6'>
@@ -78,7 +74,7 @@ export function SekretarisDashboard() {
         </Card>
       </div>
 
-      <TasksTable tasks={myTasks || []} title="My Documentation Tasks" isLoading={tasksLoading} />
+      <TasksTable tasks={myTasks || []} title="My Documentation Tasks" isLoading={tasksLoading} showAddButton />
 
       {user && allUsers && (
         <AddTaskDialog 

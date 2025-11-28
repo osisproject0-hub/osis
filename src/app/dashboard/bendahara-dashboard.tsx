@@ -100,10 +100,6 @@ export function BendaharaDashboard() {
             </p>
         </div>
         <div className="flex gap-2">
-            <Button onClick={() => setIsAddTaskOpen(true)}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Tambah Tugas
-            </Button>
             <Link href="/dashboard/finance">
                 <Button>
                     <DollarSign className="mr-2 h-4 w-4" />
@@ -149,7 +145,7 @@ export function BendaharaDashboard() {
           </CardContent>
       </Card>
 
-      <TasksTable tasks={myTasks || []} title="My Financial Tasks" isLoading={tasksLoading} />
+      <TasksTable tasks={myTasks || []} title="My Financial Tasks" isLoading={tasksLoading} showAddButton />
 
       {user && allUsers && (
         <AddTaskDialog 
