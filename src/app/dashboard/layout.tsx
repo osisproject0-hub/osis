@@ -14,18 +14,18 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isLoading } = useUser();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
 
   useEffect(() => {
     // Redirect only when loading is complete and we are sure there is no user data
-    if (!isLoading && !user) {
+    if (!isUserLoading && !user) {
       router.push('/login');
     }
-  }, [user, isLoading, router]);
+  }, [user, isUserLoading, router]);
 
   // Show a loading skeleton while we wait for auth state and user data
-  if (isLoading || !user) {
+  if (isUserLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <div className="w-full max-w-md space-y-4 p-4">
@@ -35,6 +35,12 @@ export default function DashboardLayout({
         </div>
       </div>
     );
+  }
+
+  // If loading is done but there is still no user, we will be redirected.
+  // Render nothing here to avoid a flash of the dashboard.
+  if (!user) {
+    return null;
   }
 
   return (
