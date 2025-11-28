@@ -121,7 +121,7 @@ export default function LoginPage() {
           ) : (
             <>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleLogin)}>
+                <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-4">
                   <CardContent className="space-y-4">
                     <FormField
                       control={form.control}

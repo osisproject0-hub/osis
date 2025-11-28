@@ -30,6 +30,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    // This is to allow cross-origin requests in the development environment.
+    // The Next.js dev server is running in a container and is accessed from a different origin.
+    allowedDevOrigins: [
+      'https://6000-firebase-studio-1764282009008.cluster-bg6uurscprhn6qxr6xwtrhvkf6.cloudworkstations.dev',
+    ],
+  },
 };
 
 export default nextConfig;
