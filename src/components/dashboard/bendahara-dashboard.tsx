@@ -145,7 +145,7 @@ export function BendaharaDashboard() {
           </CardContent>
       </Card>
 
-      <TasksTable tasks={myTasks || []} title="My Financial Tasks" isLoading={tasksLoading} showAddButton/>
+      <TasksTable tasks={myTasks || []} title="My Financial Tasks" isLoading={tasksLoading} showAddButton />
 
       {user && allUsers && (
         <AddTaskDialog 
