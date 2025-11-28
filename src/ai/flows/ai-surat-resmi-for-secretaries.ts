@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-const AiSuratResmiForSecretariesInputSchema = z.object({
+export const AiSuratResmiForSecretariesInputSchema = z.object({
   recipient: z.string().describe('The recipient of the letter (e.g., "Kepala Sekolah", "Ketua OSIS SMPN 1").'),
   subject: z.string().describe('The subject or title of the letter (e.g., "Permohonan Izin Tempat", "Undangan Rapat").'),
   bodyPoints: z.string().describe('A list of key points or the main message to be included in the letter body. Can be bullet points or a short paragraph.'),
@@ -19,13 +19,14 @@ const AiSuratResmiForSecretariesInputSchema = z.object({
 });
 export type AiSuratResmiForSecretariesInput = z.infer<typeof AiSuratResmiForSecretariesInputSchema>;
 
-const AiSuratResmiForSecretariesOutputSchema = z.object({
+export const AiSuratResmiForSecretariesOutputSchema = z.object({
   letter: z
     .string()
     .describe('The complete draft of the official letter, formatted in proper Indonesian, including header, body, and closing.'),
 });
 export type AiSuratResmiForSecretariesOutput = z.infer<typeof AiSuratResmiForSecretariesOutputSchema>;
 
+// This function can be called from other server-side code.
 export async function aiSuratResmiForSecretaries(
   input: AiSuratResmiForSecretariesInput
 ): Promise<AiSuratResmiForSecretariesOutput> {
@@ -57,6 +58,9 @@ const aiSuratResmiForSecretariesFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await aiSuratResmiForSecretariesPrompt(input);
-    return output!;
+    if (!output) {
+        throw new Error('Failed to generate letter from prompt.');
+    }
+    return output;
   }
 );
