@@ -1,11 +1,11 @@
 'use client';
 
 import { useUser } from '@/firebase';
-import { KetuaDashboard } from '@/components/dashboard/ketua-dashboard';
-import { WakilDashboard } from '@/components/dashboard/wakil-dashboard';
-import { SekretarisDashboard } from '@/components/dashboard/sekretaris-dashboard';
-import { BendaharaDashboard } from '@/components/dashboard/bendahara-dashboard';
-import { AnggotaDashboard } from '@/components/dashboard/anggota-dashboard';
+import { KetuaDashboard } from '@/app/dashboard/ketua-dashboard';
+import { WakilDashboard } from '@/app/dashboard/wakil-dashboard';
+import { SekretarisDashboard } from '@/app/dashboard/sekretaris-dashboard';
+import { BendaharaDashboard } from '@/app/dashboard/bendahara-dashboard';
+import { AnggotaDashboard } from '@/app/dashboard/anggota-dashboard';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function DashboardPage() {
@@ -22,6 +22,9 @@ export default function DashboardPage() {
   }
 
   const renderDashboard = () => {
+    if (!user || !user.position) {
+      return <AnggotaDashboard />;
+    }
     switch(user.position) {
       case 'Ketua OSIS':
         return <KetuaDashboard />;

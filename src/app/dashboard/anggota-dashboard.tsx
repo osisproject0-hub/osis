@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
 import { collection, query, where } from 'firebase/firestore';
 import type { Task, User } from '@/lib/types';
@@ -43,7 +43,7 @@ export function AnggotaDashboard() {
 
   const divisionName = user.position?.startsWith('Ketua') 
     ? user.divisionName
-    : user.divisionName.replace('Anggota ', '');
+    : user.divisionName?.replace('Anggota ', '');
 
   return (
     <div className="space-y-6">
