@@ -52,6 +52,9 @@ const aiBriefingForKetuaFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('AI Briefing generation failed: No output from model.');
+    }
+    return output;
   }
 );
