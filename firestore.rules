@@ -1,0 +1,210 @@
+/**
+ * This ruleset enforces a security model for the Nusantara OSIS Hub application,
+ * blending strict user ownership with collaborative, role-based access. The primary goal
+ * is to ensure data privacy and integrity while supporting the application's core
+ * features of task management and reporting.
+ *
+ * Core Philosophy:
+ * The security model is user-centric. A user's personal profile data is strictly
+ * private and accessible only to them. For collaborative data like tasks and reports,
+ * access is determined by explicit roles or relationships denormalized directly onto
+ * the documents (e.g., `assignedToUID`, `submittedByUID`), which avoids costly and slow
+ * `get()` calls in rules.
+ *
+ * Data Structure:
+ * - /users/{userId}: Private user profiles, owned by the user.
+ * - /divisions/{divisionId}: Organizational structure data, readable by all signed-in users.
+ * - /divisions/{divisionId}/tasks/{taskId}: Tasks nested under their respective division.
+ * - /reports/{reportId}: Top-level collection for reports submitted by users.
+ * - /workflows/{workflowId}: System configuration data, readable by all signed-in users.
+ *
+ * Key Security Decisions:
+ * - User Data Privacy: A user can only access their own document within the `/users` collection. Listing all users is explicitly disallowed to prevent user enumeration.
+ * - Ownership-Based Writes: All write operations (create, update, delete) on entities like Reports and Tasks are strictly controlled by ownership fields (`submittedByUID`, `assignedByUID`) stored directly on the document.
+ * - Read-Only Configuration: Collections like `/divisions` and `/workflows` that store organizational or system data are readable by any authenticated user but are not writable by default, awaiting a future admin role implementation.
+ * - Secure Task Listing: Direct listing of all tasks within a division (`/divisions/{divisionId}/tasks`) is disabled. This is a critical security measure because without denormalizing a list of division members onto each division document, there is no performant or secure way to verify that a user belongs to that division during a `list` operation. Users should query for tasks assigned to them.
+ *
+ * Denormalization for Authorization:
+ * This ruleset relies on denormalization. For a `Report`, the `submittedByUID` is on the document, making ownership checks immediate. For a `Task`, the `assignedToUID` and `assignedByUID` fields grant access to the specific users involved without needing to look up other documents. This is fundamental to creating secure, scalable rules.
+ *
+ * Structural Segregation:
+ * The data model naturally segregates data into logical collections (e.g., `users`, `reports`, `divisions`), which simplifies rule logic and aligns with Firestore best practices.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ----------------------------------------------------------------------
+    // Helper Functions
+    // ----------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * Checks if the requesting user's UID matches the provided userId.
+     * This is the foundation of the user-ownership model.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Ensures a document exists before an update or delete operation.
+     * This prevents modification of non-existent data.
+     */
+    function isExistingDoc() {
+      return resource != null;
+    }
+
+    /**
+     * For a create operation, validates that the new document's UID field
+     * matches the authenticated user's ID, establishing ownership.
+     */
+    function isCreatingSelf() {
+      return request.resource.data.uid == request.auth.uid;
+    }
+
+    /**
+     * For an update operation, ensures the document's UID field is immutable.
+     */
+    function isUidImmutable() {
+      return request.resource.data.uid == resource.data.uid;
+    }
+
+    /**
+     * For a create operation on a Report, validates the submitter is the current user.
+     */
+    function isCreatingReportAsSelf() {
+      return isSignedIn() && request.resource.data.submittedByUID == request.auth.uid;
+    }
+
+    /**
+     * For existing Reports, checks if the current user is the original submitter.
+     */
+    function isReportSubmitter() {
+      return isSignedIn() && request.auth.uid == resource.data.submittedByUID;
+    }
+
+    /**
+     * For an update operation on a Report, ensures the submitter field is immutable.
+     */
+    function isReportSubmitterImmutable() {
+      return request.resource.data.submittedByUID == resource.data.submittedByUID;
+    }
+
+    /**
+     * For a create operation on a Task, validates that the assigner is the current user
+     * and that the task's divisionId matches its path.
+     */
+    function isCreatingValidTask(divisionId) {
+      return isSignedIn()
+        && request.resource.data.assignedByUID == request.auth.uid
+        && request.resource.data.divisionId == divisionId;
+    }
+
+    /**
+     * For existing Tasks, checks if the user is either the assignee or the assigner.
+     */
+    function isTaskParticipant() {
+      return isSignedIn() && (request.auth.uid == resource.data.assignedToUID || request.auth.uid == resource.data.assignedByUID);
+    }
+
+    /**
+     * For an update operation on a Task, ensures critical relational fields are immutable.
+     */
+    function areTaskRelationsImmutable(divisionId) {
+      return request.resource.data.assignedByUID == resource.data.assignedByUID
+        && request.resource.data.divisionId == divisionId;
+    }
+
+    // ----------------------------------------------------------------------
+    // Collection Rules
+    // ----------------------------------------------------------------------
+
+    /**
+     * @description Manages user profiles. Only the owner of a profile can read or write to it.
+     * @path /users/{userId}
+     * @allow (get) A logged-in user (auth.uid='user123') retrieving their own profile at /users/user123.
+     * @deny (get) A logged-in user (auth.uid='user456') trying to read another user's profile at /users/user123.
+     * @deny (list) Any user trying to list all documents in the /users collection.
+     * @principle Restricts access to a user's own data tree, preventing data leakage and user enumeration.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && isCreatingSelf();
+      allow update: if isOwner(userId) && isExistingDoc() && isUidImmutable();
+      allow delete: if isOwner(userId) && isExistingDoc();
+    }
+
+    /**
+     * @description Manages OSIS divisions. This is considered public information within the organization.
+     * @path /divisions/{divisionId}
+     * @allow (get, list) Any authenticated user can read division information.
+     * @deny (create, update, delete) All write operations are disabled by default.
+     * @principle Provides read-only access to organizational data for all members, with writes reserved for future admin roles.
+     */
+    match /divisions/{divisionId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if false; // TODO: Implement admin-only access for creating divisions.
+      allow update: if false; // TODO: Implement admin-only access for updating divisions.
+      allow delete: if false; // TODO: Implement admin-only access for deleting divisions.
+
+      /**
+       * @description Manages tasks, which are nested under divisions.
+       * @path /divisions/{divisionId}/tasks/{taskId}
+       * @allow (get) The user who was assigned the task OR the user who assigned it can read it.
+       * @deny (get) A user who is not the assigner or assignee tries to read the task.
+       * @deny (list) Listing all tasks in a division is disallowed for security and performance reasons.
+       * @principle Enforces access based on roles denormalized onto the document (assigner/assignee), avoiding costly lookups.
+       */
+      match /tasks/{taskId} {
+        allow get: if isTaskParticipant();
+        // CRITICAL: Listing tasks is denied because there is no way to securely check
+        // if the requesting user is a member of the parent division without a slow `get` call.
+        // To enable this, the /divisions/{divisionId} document should contain a `members` map or array.
+        allow list: if false;
+        allow create: if isCreatingValidTask(divisionId);
+        allow update: if isTaskParticipant() && isExistingDoc() && areTaskRelationsImmutable(divisionId);
+        allow delete: if isTaskParticipant() && isExistingDoc();
+      }
+    }
+
+    /**
+     * @description Manages reports submitted by users.
+     * @path /reports/{reportId}
+     * @allow (get) The user who submitted the report (auth.uid == resource.data.submittedByUID) can read it.
+     * @deny (get) Any user trying to read a report they did not submit.
+     * @deny (list) Listing all reports in the collection is disallowed to protect privacy.
+     * @principle Enforces strict document ownership for both reads and writes based on a `submittedByUID` field.
+     */
+    match /reports/{reportId} {
+      allow get: if isReportSubmitter();
+      allow list: if false;
+      allow create: if isCreatingReportAsSelf();
+      allow update: if isReportSubmitter() && isExistingDoc() && isReportSubmitterImmutable();
+      allow delete: if isReportSubmitter() && isExistingDoc();
+    }
+
+    /**
+     * @description Manages system workflows. This is configuration data readable by all users.
+     * @path /workflows/{workflowId}
+     * @allow (get, list) Any authenticated user can read workflow configurations.
+     * @deny (create, update, delete) All write operations are disabled by default.
+     * @principle Provides read-only access to system configuration, with writes reserved for future admin roles.
+     */
+    match /workflows/{workflowId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if false; // TODO: Implement admin-only access for creating workflows.
+      allow update: if false; // TODO: Implement admin-only access for updating workflows.
+      allow delete: if false; // TODO: Implement admin-only access for deleting workflows.
+    }
+  }
+}
