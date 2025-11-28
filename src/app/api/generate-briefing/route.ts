@@ -1,15 +1,18 @@
-import { aiBriefingForKetua, AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
+import { aiBriefingForKetuaFlow, AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
     const input: AIBriefingForKetuaInput = await req.json();
-    const result = await aiBriefingForKetua(input);
+    
+    // Panggil flow secara langsung sebagai fungsi async
+    const result = await aiBriefingForKetuaFlow(input);
+
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
-    console.error('Error in /api/generate-briefing:', error);
+    console.error("SERVER ERROR in /api/generate-briefing:", error); // <-- Ini akan muncul di terminal
     return NextResponse.json(
-        { success: false, error: error.message || 'Failed to generate briefing.' },
+        { success: false, error: error.message || 'Internal Server Error' },
         { status: 500 }
     );
   }

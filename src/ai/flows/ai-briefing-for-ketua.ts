@@ -8,8 +8,8 @@
  * - AIBriefingForKetuaOutput - The return type for the aiBriefingForKetua function.
  */
 
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { ai } from '@/ai/genkit';
+import { z } from 'genkit';
 
 const AIBriefingForKetuaInputSchema = z.object({
   pendingApprovals: z.string().describe('A summary of pending approvals.'),
@@ -41,7 +41,7 @@ const prompt = ai.definePrompt({
 });
 
 
-const aiBriefingForKetuaFlow = ai.defineFlow(
+export const aiBriefingForKetuaFlow = ai.defineFlow(
   {
     name: 'aiBriefingForKetuaFlow',
     inputSchema: AIBriefingForKetuaInputSchema,
@@ -49,10 +49,9 @@ const aiBriefingForKetuaFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('Failed to generate briefing from prompt.');
+    }
+    return output;
   }
 );
-
-export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {
-    return await aiBriefingForKetuaFlow(input);
-}

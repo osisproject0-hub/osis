@@ -1,9 +1,9 @@
-// ✅ Cukup import library utamanya saja
+// src/ai/genkit.ts
 import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/google-genai';
 
-// Lanjutkan dengan inisialisasi
+// Export instance 'ai' ini untuk dipakai di file lain
 export const ai = genkit({
   plugins: [googleAI()],
-  model: 'gemini-1.5-flash', // atau model lain
+  model: 'gemini-1.5-flash',
 });
