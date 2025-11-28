@@ -11,7 +11,7 @@ import type { Task, User as UserType, FundRequest, FinancialReport, Division } f
 import { AddTaskDialog } from '@/components/add-task-dialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 
 
@@ -141,13 +141,13 @@ export function KetuaDashboard() {
                 ) : (
                     <ChartContainer config={chartConfig} className="h-[250px] w-full">
                         <ResponsiveContainer>
-                            <BarChart data={divisionProgressChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <RechartsBarChart data={divisionProgressChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <CartesianGrid vertical={false} />
                                 <XAxis dataKey="division" tickLine={false} axisLine={false} tickMargin={8} angle={-45} textAnchor="end" height={60} />
                                 <YAxis unit="%" />
                                 <Tooltip cursor={false} content={<ChartTooltipContent formatter={(value) => `${value}%`} />} />
                                 <Bar dataKey="progress" fill="var(--color-progress)" radius={4} />
-                            </BarChart>
+                            </RechartsBarChart>
                         </ResponsiveContainer>
                     </ChartContainer>
                 )}
