@@ -33,6 +33,7 @@ const aiBriefingForKetuaFlow = ai.defineFlow(
     outputSchema: AIBriefingForKetuaOutputSchema,
   },
   async (input) => {
+    
     const prompt = `You are an AI assistant providing a daily briefing for the Ketua OSIS (Head of Student Council).
 
     Here is a summary of pending approvals: ${input.pendingApprovals}
@@ -42,7 +43,7 @@ const aiBriefingForKetuaFlow = ai.defineFlow(
     Here is a summary of sentiment analysis from public forums: ${input.sentimentAnalysis}
 
     Based on this information, generate a concise and informative briefing for the Ketua OSIS to quickly understand the current situation and make informed decisions. Structure your output as a single string.`;
-
+    
     const { output } = await ai.generate({
         prompt: prompt,
         output: {
