@@ -11,6 +11,7 @@ import type { Task, User } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CheckCircle2, ListTodo, Loader, HandCoins, PlusCircle } from 'lucide-react';
 import { AddFundRequestDialog } from '@/components/add-fund-request-dialog';
+import { Button } from '@/components/ui/button';
 
 
 export function AnggotaDashboard() {
