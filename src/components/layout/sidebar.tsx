@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase, FileSignature } from 'lucide-react';
+import { Bot, LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase, FileSignature, Shield } from 'lucide-react';
 
 import { useUser } from '@/firebase';
 import {
@@ -24,6 +24,7 @@ const menuItems = [
   { href: '/dashboard/finance', icon: DollarSign, label: 'Finance', requiredAccess: 8 },
   { href: '/dashboard/divisions', icon: Briefcase, label: 'Divisions', requiredAccess: 7 },
   { href: '/dashboard/members', icon: Users, label: 'Members', requiredAccess: 9 },
+  { href: '/dashboard/admin', icon: Shield, label: 'Admin Panel', requiredAccess: 10 },
   { href: '/dashboard/settings', icon: Settings, label: 'Settings', requiredAccess: 1 },
 ];
 
@@ -46,9 +47,8 @@ export function AppSidebar() {
           {menuItems.map((item) =>
             accessLevel >= item.requiredAccess ? (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href} passHref>
+                <Link href={item.href}>
                   <SidebarMenuButton
-                    as="a"
                     isActive={pathname === item.href}
                     tooltip={{ children: item.label }}
                   >

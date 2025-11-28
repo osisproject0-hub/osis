@@ -9,41 +9,43 @@ service cloud.firestore {
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
+    
+    function isAdmin() {
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accessLevel >= 10;
+    }
 
     // Rules for 'users' collection
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow write: if isOwner(userId);
+      allow create, update, delete: if isAdmin();
+      allow write: if isOwner(userId); // Allow users to update their own profile
     }
 
     // Rules for 'tasks' collection
     match /tasks/{taskId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn();
-      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.assignedByUID || request.auth.uid == resource.data.assignedToUID);
+      allow update, delete: if isAdmin() || (isSignedIn() && (request.auth.uid == resource.data.assignedByUID || request.auth.uid == resource.data.assignedToUID));
     }
 
     // Rules for 'divisions' collection
     match /divisions/{divisionId} {
       allow read: if isSignedIn();
-      // Allow writes only for admins in the future
-      allow write: if false; 
+      allow write: if isAdmin(); 
     }
 
     // Rules for 'fundRequests' collection
     match /fundRequests/{requestId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn();
-      // Only treasurer or president can approve/reject
-      allow update: if isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accessLevel >= 8;
-      allow delete: if isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accessLevel >= 10;
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
     }
 
     // Rules for 'financialReports' collection
     match /financialReports/{reportId} {
       allow read: if isSignedIn();
-      // Only treasurer can add/edit
-      allow write: if isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.position.matches('Bendahara.*');
+      allow write: if isAdmin() || (isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.position.matches('Bendahara.*'));
     }
   }
 }

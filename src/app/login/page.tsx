@@ -149,15 +149,16 @@ export default function LoginPage() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" disabled={isLoading} className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
                       {isLoading ? <Loader2 className="animate-spin" /> : 'Masuk'}
                     </Button>
                   </CardContent>
                 </form>
               </Form>
               <CardFooter className="flex flex-col items-center justify-center text-sm">
-                <p className="text-muted-foreground">
-                    Belum punya akun? Silakan minta admin untuk mendaftarkan Anda.
+                <p className="text-muted-foreground text-center">
+                    Hanya untuk anggota OSIS. <br/>
+                    Jika Anda anggota dan belum memiliki akun, silakan hubungi admin.
                 </p>
               </CardFooter>
             </>
