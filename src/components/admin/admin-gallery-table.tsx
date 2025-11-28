@@ -135,7 +135,7 @@ export function AdminGalleryTable({ images, isLoading }: AdminGalleryTableProps)
 function RowSkeleton() {
     return (
         <TableRow>
-            <TableCell><Skeleton className="h-[60px] w-[100px]" /></TableCell>
+            <TableCell><Skeleton className="h-[60px] w-[100px] rounded-md" /></TableCell>
             <TableCell><Skeleton className="h-5 w-48" /></TableCell>
             <TableCell><Skeleton className="h-5 w-12" /></TableCell>
             <TableCell><Skeleton className="h-8 w-8" /></TableCell>

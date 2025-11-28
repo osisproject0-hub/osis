@@ -4,16 +4,20 @@ import * as React from 'react';
 import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
 import { collection, query, where } from 'firebase/firestore';
 import type { Task, User } from '@/lib/types';
-import { Skeleton } from '../ui/skeleton';
-import { CheckCircle2, ListTodo, Loader } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { CheckCircle2, ListTodo, Loader, HandCoins, PlusCircle } from 'lucide-react';
+import { AddFundRequestDialog } from '@/components/add-fund-request-dialog';
+import { Button } from '@/components/ui/button';
+
 
 export function AnggotaDashboard() {
-  const { user, isLoading: isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const [isFundRequestOpen, setIsFundRequestOpen] = React.useState(false);
 
   const myTasksQuery = useMemoFirebase(() =>
     user ? query(collection(firestore, 'tasks'), where('assignedToUID', '==', user.uid)) : null
@@ -37,23 +41,30 @@ export function AnggotaDashboard() {
   }, [myTasks]);
 
 
-  if (isUserLoading || !user || !user.position) {
+  if (isUserLoading || !user) {
     return <DashboardSkeleton />;
   }
 
-  const divisionName = user.position.startsWith('Ketua') 
+  const divisionName = user.position?.startsWith('Ketua') 
     ? user.divisionName
-    : user.divisionName.replace('Anggota ', '');
+    : user.divisionName?.replace('Anggota ', '');
 
   return (
+    <>
     <div className="space-y-6">
-      <div>
-        <h1 className="font-headline text-3xl md:text-4xl">
-          {divisionName}
-        </h1>
-        <p className="text-muted-foreground">
-          Dashboard untuk {user.name}.
-        </p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="font-headline text-3xl md:text-4xl">
+            {divisionName}
+          </h1>
+          <p className="text-muted-foreground">
+            Dashboard untuk {user.name}.
+          </p>
+        </div>
+        <Button onClick={() => setIsFundRequestOpen(true)} >
+            <HandCoins className="mr-2 h-4 w-4" />
+            Ajukan Dana
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -125,6 +136,12 @@ export function AnggotaDashboard() {
         </div>
       </div>
     </div>
+    <AddFundRequestDialog 
+        isOpen={isFundRequestOpen}
+        setIsOpen={setIsFundRequestOpen}
+        currentUser={user}
+    />
+    </>
   );
 }
 

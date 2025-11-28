@@ -79,7 +79,7 @@ export function AdminCandidatesTable({ candidates, isLoading }: AdminCandidatesT
           <TableRow key={candidate.id}>
             <TableCell>
               <div className="flex items-center gap-3">
-                <Image src={candidate.photoURL} alt={candidate.name} width={40} height={40} className="rounded-full object-cover" />
+                <Image src={candidate.photoURL} alt={candidate.name} width={40} height={40} className="rounded-full object-cover h-10 w-10" />
                 <span className="font-semibold">{candidate.name}</span>
               </div>
             </TableCell>
