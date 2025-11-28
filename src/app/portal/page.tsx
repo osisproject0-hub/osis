@@ -8,8 +8,10 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Briefcase, Users } from 'lucide-react';
+import { Briefcase, Users, Bot, LogIn } from 'lucide-react';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 // Pre-defined division order
 const divisionOrder = [
@@ -24,6 +26,33 @@ const divisionOrder = [
   'Divisi Keamanan & Ketertiban',
   'Divisi Kesehatan',
 ];
+
+const workPrograms = [
+    {
+        division: "Umum",
+        programs: ["Rapat Pleno", "Latihan Dasar Kepemimpinan (LDK)", "Penerimaan Anggota Baru"]
+    },
+    {
+        division: "Divisi Keimanan & Ketaqwaan",
+        programs: ["Peringatan Hari Besar Islam (PHBI)", "Pesantren Kilat", "Kultum Jumat"]
+    },
+    {
+        division: "Divisi Kehidupan Berbangsa & Bernegara",
+        programs: ["Upacara Bendera Setiap Hari Senin", "Peringatan Hari Kemerdekaan RI", "Bakti Sosial"]
+    },
+    {
+        division: "Divisi Dokumentasi & Kesenian",
+        programs: ["Pentas Seni (PENSI) Tahunan", "Lomba Fotografi & Videografi", "Mading Sekolah"]
+    },
+    {
+        division: "Divisi Olahraga",
+        programs: ["Pekan Olahraga Antar Kelas (PORKELAS)", "Classmeeting", "Latihan Rutin Ekskul Olahraga"]
+    },
+    {
+        division: "Divisi Teknologi & Komunikasi",
+        programs: ["Pengelolaan Media Sosial OSIS", "Seminar IT & Workshop Digital", "Liputan Event Sekolah"]
+    }
+]
 
 export default function PortalPage() {
   const firestore = useFirestore();
@@ -42,6 +71,25 @@ export default function PortalPage() {
 
   return (
     <div className="bg-background">
+       <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
+            <div className="container mx-auto flex justify-between items-center">
+                 <Link href="/portal" className="flex items-center gap-2">
+                    <Bot className="w-8 h-8 text-primary" />
+                    <span className="font-headline text-xl font-bold text-foreground">Nusantara OSIS Hub</span>
+                </Link>
+                <div className='flex items-center gap-4'>
+                     <Link href="/portal">
+                        <Button variant="ghost">Portal</Button>
+                    </Link>
+                    <Link href="/login">
+                        <Button>
+                            <LogIn className='mr-2'/>
+                            Login Anggota
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+        </header>
       <main>
         {/* Hero Section */}
         <section className="relative h-[60vh] flex items-center justify-center text-center text-white">
@@ -66,8 +114,32 @@ export default function PortalPage() {
           </div>
         </section>
 
+        {/* Visi Misi Section */}
+        <section className="py-12 md:py-20 text-center">
+            <div className="container mx-auto px-4">
+                 <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4">
+                    Visi & Misi
+                </h2>
+                <p className="text-xl text-primary font-semibold mb-6">"Mewujudkan OSIS sebagai wadah aspirasi siswa yang aktif, kreatif, dan berakhlak mulia."</p>
+                <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                    <Card>
+                        <CardHeader><CardTitle>Aktif</CardTitle></CardHeader>
+                        <CardContent><p>Mendorong partisipasi aktif siswa dalam setiap kegiatan sekolah.</p></CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader><CardTitle>Kreatif</CardTitle></CardHeader>
+                        <CardContent><p>Menyelenggarakan program dan acara yang inovatif dan inspiratif.</p></CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader><CardTitle>Berakhlak Mulia</CardTitle></CardHeader>
+                        <CardContent><p>Menjunjung tinggi nilai-nilai moral dan etika dalam berorganisasi.</p></CardContent>
+                    </Card>
+                </div>
+            </div>
+        </section>
+
         {/* Organization Structure Section */}
-        <section id="structure" className="py-12 md:py-20">
+        <section id="structure" className="py-12 md:py-20 bg-secondary/20">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
               Struktur Organisasi
@@ -77,47 +149,61 @@ export default function PortalPage() {
                 Array.from({ length: 4 }).map((_, i) => <DivisionSkeleton key={i} />)
               ) : (
                 membersByDivision.map(division => (
-                  <Card key={division.name}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Briefcase className="h-6 w-6 text-primary" />
-                        {division.name}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <div key={division.name}>
+                    <h3 className='font-headline text-2xl mb-4 flex items-center gap-2'><Briefcase className="h-6 w-6 text-primary" /> {division.name}</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                       {division.members.map(member => (
                         <Link key={member.uid} href={`/profile/${member.uid}`} className="block">
-                            <Card className="h-full hover:shadow-lg hover:border-primary/50 transition-all">
-                                <CardContent className="pt-6 flex flex-col items-center text-center">
-                                    <Avatar className="h-20 w-20 mb-4">
-                                        <AvatarImage src={member.photoURL || ''} alt={member.name}/>
-                                        <AvatarFallback>{member.name.split(' ').map(n=>n[0]).join('').substring(0,2)}</AvatarFallback>
-                                    </Avatar>
-                                    <p className="font-semibold">{member.name}</p>
-                                    <p className="text-sm text-muted-foreground">{member.position}</p>
-                                </CardContent>
+                            <Card className="h-full hover:shadow-lg hover:border-primary/50 transition-all text-center p-4">
+                                <Avatar className="h-20 w-20 mb-2 mx-auto">
+                                    <AvatarImage src={member.photoURL || ''} alt={member.name}/>
+                                    <AvatarFallback>{member.name.split(' ').map(n=>n[0]).join('').substring(0,2)}</AvatarFallback>
+                                </Avatar>
+                                <p className="font-semibold text-sm">{member.name}</p>
+                                <p className="text-xs text-muted-foreground">{member.position}</p>
                             </Card>
                         </Link>
                       ))}
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </div>
                 ))
               )}
             </div>
           </div>
         </section>
 
+         {/* Work Program Section */}
+        <section id="work-program" className="py-12 md:py-20">
+          <div className="container mx-auto px-4 max-w-4xl">
+            <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
+              Program Kerja Unggulan
+            </h2>
+            <Accordion type="single" collapsible className="w-full">
+              {workPrograms.map(item => (
+                <AccordionItem value={item.division} key={item.division}>
+                    <AccordionTrigger className='text-lg font-semibold'>{item.division}</AccordionTrigger>
+                    <AccordionContent>
+                        <ul className='list-disc pl-5 space-y-2'>
+                            {item.programs.map(prog => <li key={prog}>{prog}</li>)}
+                        </ul>
+                    </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </section>
+
         {/* Gallery Section */}
-        <section id="gallery" className="py-12 md:py-20 bg-secondary/50">
+        <section id="gallery" className="py-12 md:py-20 bg-secondary/20">
             <div className="container mx-auto px-4">
                 <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
                 Galeri Kegiatan
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {PlaceHolderImages.filter(p => p.id.startsWith('gallery-')).map(image => (
-                        <Card key={image.id} className='overflow-hidden'>
+                        <Card key={image.id} className='overflow-hidden group'>
                              <div className="aspect-video relative">
-                                <Image src={image.imageUrl} alt={image.description} fill className="object-cover" data-ai-hint={image.imageHint} />
+                                <Image src={image.imageUrl} alt={image.description} fill className="object-cover transition-transform group-hover:scale-105" data-ai-hint={image.imageHint} />
                              </div>
                              <CardContent className='p-4'>
                                  <p className='font-semibold'>{image.description}</p>
@@ -128,25 +214,28 @@ export default function PortalPage() {
             </div>
         </section>
       </main>
+      <footer className="bg-primary text-primary-foreground py-8">
+          <div className="container mx-auto text-center">
+              <p>&copy; 2024 OSIS SMK LPPMRI 2 Kedungreja. All rights reserved.</p>
+          </div>
+      </footer>
     </div>
   );
 }
 
 const DivisionSkeleton = () => (
-    <Card>
-        <CardHeader>
-            <Skeleton className="h-8 w-1/3" />
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div>
+        <Skeleton className="h-8 w-1/3 mb-4" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {Array.from({length: 4}).map((_, i) => (
-                <Card key={i}>
-                    <CardContent className="pt-6 flex flex-col items-center text-center">
-                        <Skeleton className="h-20 w-20 rounded-full mb-4" />
-                        <Skeleton className="h-5 w-32 mb-2" />
+                <Card key={i} className='p-4'>
+                    <div className="flex flex-col items-center text-center">
+                        <Skeleton className="h-20 w-20 rounded-full mb-2" />
+                        <Skeleton className="h-5 w-32 mb-1" />
                         <Skeleton className="h-4 w-24" />
-                    </CardContent>
+                    </div>
                 </Card>
             ))}
-        </CardContent>
-    </Card>
+        </div>
+    </div>
 )

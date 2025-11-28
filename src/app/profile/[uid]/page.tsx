@@ -8,7 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TasksTable } from "@/components/tasks-table";
-import { Mail, Briefcase, Users } from "lucide-react";
+import { Mail, Briefcase, Users, Bot, LogIn } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function UserProfilePage() {
     const params = useParams();
@@ -26,54 +28,114 @@ export default function UserProfilePage() {
     const { data: tasks, isLoading: isTasksLoading } = useCollection<Task>(tasksQuery);
 
 
-    if (isUserLoading || !user) {
+    if (isUserLoading) {
         return <ProfileSkeleton />;
+    }
+    
+    if (!user) {
+        return (
+             <div className="container mx-auto p-4 md:p-8 text-center mt-20">
+                <h1 className="text-2xl font-bold">Pengguna tidak ditemukan</h1>
+                <p className="text-muted-foreground">Profil yang Anda cari tidak ada atau telah dihapus.</p>
+                 <Link href="/portal" className="mt-4 inline-block">
+                    <Button>Kembali ke Portal</Button>
+                </Link>
+            </div>
+        )
     }
 
     const fallbackInitials = user.name?.split(' ').map((n) => n[0]).join('').substring(0, 2);
 
     return (
-        <div className="container mx-auto p-4 md:p-8 space-y-8 mt-20">
-            <header className="flex flex-col md:flex-row items-center gap-6">
-                <Avatar className="h-28 w-28 border-4 border-primary/20">
-                    {user.photoURL && <AvatarImage asChild src={user.photoURL}><Image src={user.photoURL} alt={user.name} width={112} height={112} /></AvatarImage>}
-                    <AvatarFallback className="text-4xl">{fallbackInitials}</AvatarFallback>
-                </Avatar>
-                <div className="text-center md:text-left">
-                    <h1 className="font-headline text-4xl md:text-5xl">{user.name}</h1>
-                    <p className="text-xl text-muted-foreground">{user.position}</p>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2 justify-center md:justify-start">
-                        <span className="flex items-center gap-1.5"><Mail className="h-4 w-4"/> {user.email}</span>
-                        <span className="flex items-center gap-1.5"><Briefcase className="h-4 w-4"/> {user.divisionName}</span>
-                    </div>
+        <>
+        <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
+            <div className="container mx-auto flex justify-between items-center">
+                 <Link href="/portal" className="flex items-center gap-2">
+                    <Bot className="w-8 h-8 text-primary" />
+                    <span className="font-headline text-xl font-bold text-foreground">Nusantara OSIS Hub</span>
+                </Link>
+                <div className='flex items-center gap-4'>
+                     <Link href="/portal">
+                        <Button variant="ghost">Portal</Button>
+                    </Link>
+                    <Link href="/login">
+                        <Button>
+                            <LogIn className='mr-2'/>
+                            Login Anggota
+                        </Button>
+                    </Link>
                 </div>
-            </header>
-            <main>
-                <TasksTable tasks={tasks || []} isLoading={isTasksLoading} title="Tugas Aktif"/>
-            </main>
+            </div>
+        </header>
+        <div className="container mx-auto p-4 md:p-8 mt-8">
+           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <aside className="md:col-span-1 space-y-6">
+                    <Card className="text-center">
+                        <CardContent className="pt-6">
+                             <Avatar className="h-32 w-32 border-4 border-primary/20 mx-auto">
+                                {user.photoURL && <AvatarImage asChild src={user.photoURL}><Image src={user.photoURL} alt={user.name} width={128} height={128} /></AvatarImage>}
+                                <AvatarFallback className="text-5xl">{fallbackInitials}</AvatarFallback>
+                            </Avatar>
+                            <h1 className="font-headline text-3xl mt-4">{user.name}</h1>
+                            <p className="text-lg text-primary font-semibold">{user.position}</p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Detail Kontak & Divisi</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3 text-sm">
+                             <div className="flex items-center gap-3 text-muted-foreground">
+                                <Mail className="h-5 w-5"/> 
+                                <span>{user.email}</span>
+                            </div>
+                             <div className="flex items-center gap-3 text-muted-foreground">
+                                <Briefcase className="h-5 w-5"/> 
+                                <span>{user.divisionName}</span>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </aside>
+                <main className="md:col-span-2">
+                    <TasksTable tasks={tasks || []} isLoading={isTasksLoading} title="Tugas Aktif"/>
+                </main>
+           </div>
         </div>
+        </>
     )
 }
 
 function ProfileSkeleton() {
     return (
-        <div className="container mx-auto p-4 md:p-8 space-y-8 mt-20">
-             <header className="flex flex-col md:flex-row items-center gap-6">
-                <Skeleton className="h-28 w-28 rounded-full" />
-                <div className="space-y-2 text-center md:text-left">
-                    <Skeleton className="h-12 w-64" />
-                    <Skeleton className="h-6 w-48" />
-                    <Skeleton className="h-4 w-72" />
-                </div>
-            </header>
-             <main>
-                <Card>
-                    <CardHeader><Skeleton className="h-8 w-48" /></CardHeader>
-                    <CardContent>
-                        <Skeleton className="h-40 w-full" />
-                    </CardContent>
-                </Card>
-            </main>
+        <div className="container mx-auto p-4 md:p-8 mt-20">
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                 <aside className="md:col-span-1 space-y-6">
+                     <Card>
+                        <CardContent className="pt-6 flex flex-col items-center">
+                            <Skeleton className="h-32 w-32 rounded-full" />
+                            <Skeleton className="h-8 w-48 mt-4" />
+                            <Skeleton className="h-6 w-32 mt-2" />
+                        </CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader>
+                            <Skeleton className="h-7 w-1/2" />
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Skeleton className="h-5 w-full" />
+                            <Skeleton className="h-5 w-full" />
+                        </CardContent>
+                    </Card>
+                 </aside>
+                <main className="md:col-span-2">
+                    <Card>
+                        <CardHeader><Skeleton className="h-8 w-48" /></CardHeader>
+                        <CardContent>
+                            <Skeleton className="h-40 w-full" />
+                        </CardContent>
+                    </Card>
+                </main>
+             </div>
         </div>
     )
 }
