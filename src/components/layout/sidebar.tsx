@@ -38,7 +38,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
-            <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={32} height={32} className="w-8 h-8 rounded-full object-cover"/>
+            <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={32} height={32} />
             <span className="font-headline text-lg text-sidebar-foreground">OSIS SMAKDA</span>
         </div>
       </SidebarHeader>

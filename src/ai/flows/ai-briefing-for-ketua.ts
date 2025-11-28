@@ -26,7 +26,11 @@ const AIBriefingForKetuaOutputSchema = z.object({
 export type AIBriefingForKetuaOutput = z.infer<typeof AIBriefingForKetuaOutputSchema>;
 
 export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {
-  return aiBriefingForKetuaFlow(input);
+  const {output} = await aiBriefingForKetuaFlow(input);
+  if (!output) {
+    throw new Error('AI Briefing generation failed: No output from model.');
+  }
+  return output;
 }
 
 const prompt = ai.definePrompt({

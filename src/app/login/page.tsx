@@ -106,8 +106,8 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md p-4">
         <Card className="shadow-2xl">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
-                <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={64} height={64} className="rounded-full object-cover"/>
+            <div className="mx-auto mb-4 flex items-center justify-center">
+                <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={80} height={80} />
             </div>
             <CardTitle className="font-headline text-4xl">OSIS SMAKDA</CardTitle>
             <CardDescription className="pt-2">Digital Command Center</CardDescription>

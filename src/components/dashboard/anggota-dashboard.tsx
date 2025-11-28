@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { collection, query, where } from 'firebase/firestore';
 import type { Task, User } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckCircle2, ListTodo, Loader, HandCoins } from 'lucide-react';
+import { CheckCircle2, ListTodo, Loader, HandCoins, PlusCircle } from 'lucide-react';
 import { AddFundRequestDialog } from '@/components/add-fund-request-dialog';
 import { Button } from '@/components/ui/button';
 
@@ -100,7 +100,7 @@ export function AnggotaDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
-            <TasksTable tasks={myTasks || []} title="My Tasks" isLoading={tasksLoading} />
+            <TasksTable tasks={myTasks || []} title="My Tasks" isLoading={tasksLoading} showAddButton />
         </div>
         <div className="lg:col-span-1">
           <Card>

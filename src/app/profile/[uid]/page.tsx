@@ -52,7 +52,7 @@ export default function UserProfilePage() {
         <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
             <div className="container mx-auto flex justify-between items-center">
                  <Link href="/portal" className="flex items-center gap-2">
-                    <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={32} height={32}/>
+                    <Image src="https://ik.imagekit.io/zco6tu2vm/images%20(1).jpeg?updatedAt=1761836341193" alt="OSIS Logo" width={40} height={40}/>
                     <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
                 </Link>
                  <Link href="/login" >
