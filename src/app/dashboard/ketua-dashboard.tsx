@@ -7,9 +7,10 @@ import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIBriefing } from '@/components/dashboard/ai-briefing';
 import { TasksTable } from '@/components/tasks-table';
-import type { Task, User as UserType } from '@/lib/types';
+import type { Task, User as UserType, FundRequest, FinancialReport, Division } from '@/lib/types';
 import { AddTaskDialog } from '@/components/add-task-dialog';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export function KetuaDashboard() {
   const { user } = useUser();
@@ -27,12 +28,46 @@ export function KetuaDashboard() {
 
   const [isAddTaskOpen, setIsAddTaskOpen] = React.useState(false);
 
-  // In a real app, these stats would come from Firestore queries
+  const fundRequestsQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'fundRequests'), where('status', '==', 'Pending')) : null
+  , [firestore]);
+  const { data: pendingRequests, isLoading: requestsLoading } = useCollection<FundRequest>(fundRequestsQuery);
+  
+  const divisionsQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'divisions')) : null
+  , [firestore]);
+  const { data: divisions, isLoading: divisionsLoading } = useCollection<Division>(divisionsQuery);
+  
+  const financialReportsQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'financialReports')) : null
+  , [firestore]);
+  const { data: financialReports, isLoading: reportsLoading } = useCollection<FinancialReport>(financialReportsQuery);
+
+  const allTasksQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'tasks')) : null
+  , [firestore]);
+  const { data: allTasks, isLoading: allTasksLoading } = useCollection<Task>(allTasksQuery);
+
+  const financialStats = React.useMemo(() => {
+    if (!financialReports) return { balance: 0 };
+    const totalIn = financialReports.filter(r => r.type === 'Pemasukan').reduce((acc, curr) => acc + curr.amount, 0);
+    const totalOut = financialReports.filter(r => r.type === 'Pengeluaran').reduce((acc, curr) => acc + curr.amount, 0);
+    return { balance: totalIn - totalOut };
+  }, [financialReports]);
+
+  const progressStats = React.useMemo(() => {
+    if (!allTasks || allTasks.length === 0) return 0;
+    const completedTasks = allTasks.filter(t => t.status === 'completed').length;
+    return Math.round((completedTasks / allTasks.length) * 100);
+  }, [allTasks]);
+
+  const formatCurrency = (amount: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+
   const stats = [
-    { title: 'Pending Approvals', value: '3', icon: FileCheck },
-    { title: 'Active Divisions', value: '9', icon: Users },
-    { title: 'Budget Remaining', value: 'Rp 15.2M', icon: Wallet },
-    { title: 'Overall Progress', value: '76%', icon: BarChart },
+    { title: 'Pending Approvals', value: pendingRequests?.length ?? 0, icon: FileCheck, isLoading: requestsLoading },
+    { title: 'Active Divisions', value: divisions?.length ?? 0, icon: Users, isLoading: divisionsLoading },
+    { title: 'Budget Remaining', value: formatCurrency(financialStats.balance), icon: Wallet, isLoading: reportsLoading },
+    { title: 'Overall Progress', value: `${progressStats}%`, icon: BarChart, isLoading: allTasksLoading },
   ];
 
   return (
@@ -52,7 +87,7 @@ export function KetuaDashboard() {
                 <stat.icon className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                {stat.isLoading ? <Skeleton className="h-8 w-3/4" /> : <div className="text-2xl font-bold">{stat.value}</div>}
               </CardContent>
             </Card>
           ))}

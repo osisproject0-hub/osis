@@ -71,113 +71,55 @@
         },
         "assignedToUID": {
           "type": "string",
-          "description": "Reference to User. (Relationship: User 1:N Task) UID of the member assigned to the task."
+          "description": "UID of the member assigned to the task."
+        },
+        "assignedToName": {
+          "type": "string",
+          "description": "Name of the member assigned to the task."
         },
         "assignedByUID": {
           "type": "string",
-          "description": "Reference to User. (Relationship: User 1:N Task) UID of the member who assigned the task."
+          "description": "UID of the member who assigned the task."
+        },
+        "assignedByName": {
+          "type": "string",
+          "description": "Name of the member who assigned the task."
         },
         "divisionId": {
           "type": "string",
-          "description": "Reference to Division. (Relationship: Division 1:N Task) ID of the division the task is related to."
+          "description": "ID of the division the task is related to."
         },
         "dueDate": {
           "type": "string",
           "description": "Date and time when the task is due.",
           "format": "date-time"
         },
+        "createdAt": {
+          "type": "string",
+          "description": "Date and time when the task was created.",
+          "format": "date-time"
+        },
         "status": {
           "type": "string",
-          "description": "Current status of the task (e.g., 'pending', 'in-progress', 'completed', 'overdue')."
+          "description": "Current status of the task.",
+          "enum": ["pending", "in-progress", "completed", "overdue"]
         },
         "priority": {
           "type": "string",
-          "description": "Priority level of the task (e.g., 'low', 'medium', 'high', 'urgent')."
+          "description": "Priority level of the task.",
+          "enum": ["low", "medium", "high", "urgent"]
         }
       },
       "required": [
-        "id",
         "title",
-        "description",
         "assignedToUID",
+        "assignedToName",
         "assignedByUID",
-        "divisionId",
+        "assignedByName",
         "dueDate",
+        "createdAt",
         "status",
         "priority"
-      ]
-    },
-    "Workflow": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Workflow",
-      "type": "object",
-      "description": "Represents an automated workflow within the application.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Workflow entity."
-        },
-        "triggerName": {
-          "type": "string",
-          "description": "Name of the event that triggers the workflow (e.g., 'eventApproved')."
-        },
-        "actions": {
-          "type": "array",
-          "description": "Array of actions to be performed when the workflow is triggered.",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "required": [
-        "id",
-        "triggerName",
-        "actions"
-      ]
-    },
-    "Report": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "Report",
-      "type": "object",
-      "description": "Represents a report submitted within the OSIS organization.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Report entity."
-        },
-        "title": {
-          "type": "string",
-          "description": "Title of the report."
-        },
-        "content": {
-          "type": "string",
-          "description": "Content of the report."
-        },
-        "submittedByUID": {
-          "type": "string",
-          "description": "Reference to User. (Relationship: User 1:N Report) UID of the member who submitted the report."
-        },
-        "submittedForPosition": {
-          "type": "string",
-          "description": "Position for whom the report is submitted (e.g., 'Ketua OSIS')."
-        },
-        "reportType": {
-          "type": "string",
-          "description": "Type of the report (e.g., 'bulanan', 'kegiatan', 'keuangan')."
-        },
-        "status": {
-          "type": "string",
-          "description": "Current status of the report (e.g., 'draft', 'submitted', 'approved', 'rejected')."
-        }
-      },
-      "required": [
-        "id",
-        "title",
-        "content",
-        "submittedByUID",
-        "submittedForPosition",
-        "reportType",
-        "status"
       ]
     },
     "Division": {
@@ -199,106 +141,61 @@
           "description": "Description of the division's responsibilities and activities."
         }
       },
-      "required": [
-        "id",
-        "name",
-        "description"
-      ]
+      "required": ["id", "name", "description"]
+    },
+    "FundRequest": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FundRequest",
+      "type": "object",
+      "description": "Represents a request for funds from a division.",
+      "properties": {
+        "division": { "type": "string" },
+        "item": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "requestedBy": { "type": "string", "description": "UID of the user making the request." },
+        "requestedByName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["division", "item", "amount", "status", "requestedBy", "requestedByName", "createdAt"]
+    },
+    "FinancialReport": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FinancialReport",
+      "type": "object",
+      "description": "Represents a financial transaction (income or expense).",
+      "properties": {
+        "date": { "type": "string", "format": "date-time" },
+        "description": { "type": "string" },
+        "type": { "type": "string", "enum": ["Pemasukan", "Pengeluaran"] },
+        "amount": { "type": "number" },
+        "recordedBy": { "type": "string", "description": "UID of the user recording the transaction." },
+        "recordedByName": { "type": "string" }
+      },
+      "required": ["date", "description", "type", "amount", "recordedBy", "recordedByName"]
     }
   },
-  "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
-  },
+  "auth": { "providers": ["password", "anonymous"] },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Stores user profiles. Path-based ownership for security. Includes user details such as UID, email, name, position, division, and access level.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "User ID from Firebase Authentication."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/divisions/{divisionId}/tasks/{taskId}",
-        "definition": {
-          "entityName": "Task",
-          "schema": {
-            "$ref": "#/backend/entities/Task"
-          },
-          "description": "Stores tasks assigned to users within specific divisions. Includes `assignedToUID` and `assignedByUID` to track task assignment and `divisionId`. Segregating tasks by division supports efficient listing and querying of tasks within a division.",
-          "params": [
-            {
-              "name": "divisionId",
-              "description": "ID of the division the task is related to."
-            },
-            {
-              "name": "taskId",
-              "description": "Unique identifier for the Task entity."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/workflows/{workflowId}",
-        "definition": {
-          "entityName": "Workflow",
-          "schema": {
-            "$ref": "#/backend/entities/Workflow"
-          },
-          "description": "Stores automated workflows triggered by events.",
-          "params": [
-            {
-              "name": "workflowId",
-              "description": "Unique identifier for the Workflow entity."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/reports/{reportId}",
-        "definition": {
-          "entityName": "Report",
-          "schema": {
-            "$ref": "#/backend/entities/Report"
-          },
-          "description": "Stores reports submitted by users. Includes `submittedByUID` and `submittedForPosition` to track report submissions.",
-          "params": [
-            {
-              "name": "reportId",
-              "description": "Unique identifier for the Report entity."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/divisions/{divisionId}",
-        "definition": {
-          "entityName": "Division",
-          "schema": {
-            "$ref": "#/backend/entities/Division"
-          },
-          "description": "Stores division information.",
-          "params": [
-            {
-              "name": "divisionId",
-              "description": "Unique identifier for the Division entity."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The Firestore structure is designed to support the Nusantara OSIS Hub application, emphasizing personalized user experiences, role-based access control, and efficient task management. Authorization Independence is achieved by using path-based ownership for user data and denormalizing user roles and division information within tasks and reports collections, eliminating the need for `get()` calls in security rules and enabling atomic operations.\n\n*   **User Data (`/users/{userId}`):** Stores user profiles with essential information like UID, email, name, position, division, and access level. The path-based ownership ensures that only the user (or admins) can access their data.\n*   **Tasks (`/divisions/{divisionId}/tasks/{taskId}`):** Stores tasks assigned to users within specific divisions. Includes `assignedToUID` and `assignedByUID` to track task assignment. Segregating tasks by division (using a subcollection) supports efficient listing and querying of tasks within a division, satisfying the QAPs. The `divisionId` denormalizes the link to the division. While not directly denormalizing authorization data for the user involved, the path segregation to the division allows clear, simple authorization rules. Further denormalization of assignedToUIDs roles within a `members` map would fully eliminate authorization dependencies.\n*   **Workflows (`/workflows/{workflowId}`):** Stores automated workflows triggered by events. While workflows themselves don't directly involve user authorization, their execution (triggered by events) may need to be secured using Cloud Functions with appropriate role checks.\n*   **Reports (`/reports/{reportId}`):** Stores reports submitted by users. Includes `submittedByUID` and `submittedForPosition` to track report submissions. Storing reports in a top-level collection (rather than as subcollections of users or divisions) simplifies querying and reporting across the entire OSIS organization. While segregation is not used, the `submittedByUID` field enables straightforward ownership-based security rules. Using a membership model here (e.g. `canView: {uid1: true, uid2:true}`) would further improve authorization independence.\n*   **Divisions (`/divisions/{divisionId}`):** Stores division information. This collection serves as a lookup for division details and is referenced by tasks and users. The path structure ensures the integrity of division data and supports efficient querying of division-related information.\n\nThis structure provides a solid foundation for building the Nusantara OSIS Hub application, enabling secure and efficient management of user data, tasks, workflows, and reports."
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "/tasks/{taskId}": {
+      "schema": { "$ref": "#/entities/Task" },
+      "description": "Stores tasks assigned to users."
+    },
+    "/divisions/{divisionId}": {
+      "schema": { "$ref": "#/entities/Division" },
+      "description": "Stores division information."
+    },
+    "/fundRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/FundRequest" },
+      "description": "Stores fund requests from divisions."
+    },
+    "/financialReports/{reportId}": {
+      "schema": { "$ref": "#/entities/FinancialReport" },
+      "description": "Stores all financial transactions."
+    }
   }
 }

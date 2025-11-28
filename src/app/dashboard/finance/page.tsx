@@ -80,21 +80,29 @@ export default function FinancePage() {
                       <TableRow><TableCell colSpan={5}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
                       <TableRow><TableCell colSpan={5}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
                     </>
-                  ) : fundRequests?.map((request) => (
-                    <TableRow key={request.id}>
-                      <TableCell>{request.division}</TableCell>
-                      <TableCell>{request.item}</TableCell>
-                      <TableCell>{formatCurrency(request.amount)}</TableCell>
-                      <TableCell>
-                        <Badge variant={statusVariant[request.status]}>{request.status}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Button variant="outline" size="sm">
-                          Details
-                        </Button>
+                  ) : fundRequests?.length ? (
+                    fundRequests.map((request) => (
+                      <TableRow key={request.id}>
+                        <TableCell>{request.division}</TableCell>
+                        <TableCell>{request.item}</TableCell>
+                        <TableCell>{formatCurrency(request.amount)}</TableCell>
+                        <TableCell>
+                          <Badge variant={statusVariant[request.status]}>{request.status}</Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="outline" size="sm">
+                            Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                   ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-24 text-center">
+                        No fund requests found.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </CardContent>
@@ -122,20 +130,28 @@ export default function FinancePage() {
                       <TableRow><TableCell colSpan={4}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
                       <TableRow><TableCell colSpan={4}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
                     </>
-                  ) : financialReports?.map((report) => (
-                    <TableRow key={report.id}>
-                      <TableCell>{new Date(report.date).toLocaleDateString()}</TableCell>
-                      <TableCell>{report.description}</TableCell>
-                      <TableCell>
-                        <Badge variant={report.type === 'Pemasukan' ? 'default' : 'secondary'}>
-                            {report.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className={`text-right font-medium ${report.type === 'Pemasukan' ? 'text-green-600' : 'text-red-600'}`}>
-                        {formatCurrency(report.amount)}
+                  ) : financialReports?.length ? (
+                    financialReports.map((report) => (
+                      <TableRow key={report.id}>
+                        <TableCell>{new Date(report.date).toLocaleDateString()}</TableCell>
+                        <TableCell>{report.description}</TableCell>
+                        <TableCell>
+                          <Badge variant={report.type === 'Pemasukan' ? 'default' : 'secondary'}>
+                              {report.type}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className={`text-right font-medium ${report.type === 'Pemasukan' ? 'text-green-600' : 'text-red-600'}`}>
+                          {formatCurrency(report.amount)}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                     <TableRow>
+                      <TableCell colSpan={4} className="h-24 text-center">
+                        No financial reports found.
                       </TableCell>
                     </TableRow>
-                  ))}
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

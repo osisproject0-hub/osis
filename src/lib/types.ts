@@ -59,17 +59,23 @@ export interface FundRequest {
   item: string;
   amount: number;
   status: 'Pending' | 'Approved' | 'Rejected';
-  requestedBy: DocumentReference<User>;
+  requestedBy: string; // UID of the user
   requestedByName: string;
   createdAt: Timestamp;
 }
 
 export interface FinancialReport {
     id?: string;
-    date: Timestamp | string;
+    date: string; // Using ISO string for date
     description: string;
     type: 'Pemasukan' | 'Pengeluaran';
     amount: number;
-    recordedBy: DocumentReference<User>;
+    recordedBy: string; // UID of the user
     recordedByName: string;
+}
+
+export interface Division {
+  id?: string;
+  name: string;
+  description: string;
 }
