@@ -26,7 +26,7 @@ const AIBriefingForKetuaOutputSchema = z.object({
 export type AIBriefingForKetuaOutput = z.infer<typeof AIBriefingForKetuaOutputSchema>;
 
 export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {
-  const {output} = await aiBriefingForKetuaFlow(input);
+  const {output} = await prompt(input);
   if (!output) {
     throw new Error('AI Briefing generation failed: No output from model.');
   }
@@ -47,18 +47,3 @@ const prompt = ai.definePrompt({
 
   Based on this information, generate a concise and informative briefing for the Ketua OSIS to quickly understand the current situation and make informed decisions.`,
 });
-
-const aiBriefingForKetuaFlow = ai.defineFlow(
-  {
-    name: 'aiBriefingForKetuaFlow',
-    inputSchema: AIBriefingForKetuaInputSchema,
-    outputSchema: AIBriefingForKetuaOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    if (!output) {
-      throw new Error('AI Briefing generation failed: No output from model.');
-    }
-    return output;
-  }
-);
