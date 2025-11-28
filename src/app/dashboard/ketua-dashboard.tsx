@@ -1,9 +1,9 @@
 'use client';
 
-import { FileCheck, Users, Wallet, BarChart, PlusCircle } from 'lucide-react';
+import { FileCheck, Users, Wallet, BarChart, PlusCircle, ThumbsDown, ThumbsUp } from 'lucide-react';
 import * as React from 'react';
-import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { useUser, useCollection, useFirestore, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
+import { collection, query, where, doc, Timestamp } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AIBriefing } from '@/components/dashboard/ai-briefing';
 import { TasksTable } from '@/components/tasks-table';
@@ -13,6 +13,11 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChartContainer, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { formatDistanceToNow } from 'date-fns';
+import { id } from 'date-fns/locale';
+import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 
 const chartConfig = {
@@ -26,6 +31,7 @@ const chartConfig = {
 export function KetuaDashboard() {
   const { user } = useUser();
   const firestore = useFirestore();
+  const { toast } = useToast();
   
   const myTasksQuery = useMemoFirebase(() => 
     user ? query(collection(firestore, 'tasks'), where('assignedToUID', '==', user.uid)) : null
@@ -99,6 +105,32 @@ export function KetuaDashboard() {
   }, [allTasks, allUsers]);
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+  
+  const formatDate = (date: Timestamp | string) => {
+        if (!date) return '-';
+        const jsDate = date instanceof Timestamp ? date.toDate() : new Date(date);
+        return formatDistanceToNow(jsDate, { addSuffix: true, locale: id });
+  }
+
+  const handleApproval = async (requestId: string, newStatus: 'Approved' | 'Rejected') => {
+        if (!firestore) return;
+        const requestRef = doc(firestore, 'fundRequests', requestId);
+        try {
+            updateDocumentNonBlocking(requestRef, { status: newStatus });
+            toast({
+                title: 'Success',
+                description: `Permintaan dana telah ${newStatus === 'Approved' ? 'disetujui' : 'ditolak'}.`,
+            });
+        } catch (e) {
+            console.error(e);
+            toast({
+                variant: 'destructive',
+                title: 'Error',
+                description: 'Gagal memperbarui status permintaan.',
+            });
+        }
+    }
+
 
   const stats = [
     { title: 'Persetujuan Tertunda', value: pendingRequests?.length ?? 0, icon: FileCheck, isLoading: requestsLoading },
@@ -129,43 +161,107 @@ export function KetuaDashboard() {
             </Card>
           ))}
         </div>
+        
+        <Tabs defaultValue="overview">
+            <TabsList>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="approvals">Persetujuan Dana <Badge variant="destructive" className="ml-2">{pendingRequests?.length || 0}</Badge></TabsTrigger>
+            </TabsList>
+            <TabsContent value="overview" className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Progres Kinerja per Divisi</CardTitle>
+                        <CardDescription>Persentase tugas yang telah diselesaikan oleh setiap divisi.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {allTasksLoading || !allUsers ? (
+                            <Skeleton className="h-[250px] w-full" />
+                        ) : (
+                            <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                                <ResponsiveContainer>
+                                    <RechartsBarChart data={divisionProgressChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                        <CartesianGrid vertical={false} />
+                                        <XAxis dataKey="division" tickLine={false} axisLine={false} tickMargin={8} angle={-45} textAnchor="end" height={60} />
+                                        <YAxis unit="%" />
+                                        <Tooltip cursor={false} content={<ChartTooltipContent formatter={(value) => `${value}%`} />} />
+                                        <Bar dataKey="progress" fill="var(--color-progress)" radius={4} />
+                                    </RechartsBarChart>
+                                </ResponsiveContainer>
+                            </ChartContainer>
+                        )}
+                    </CardContent>
+                </Card>
 
-        <Card>
-            <CardHeader>
-                <CardTitle>Progres Kinerja per Divisi</CardTitle>
-                <CardDescription>Persentase tugas yang telah diselesaikan oleh setiap divisi.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                {allTasksLoading || !allUsers ? (
-                    <Skeleton className="h-[250px] w-full" />
-                ) : (
-                    <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                        <ResponsiveContainer>
-                            <RechartsBarChart data={divisionProgressChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                <CartesianGrid vertical={false} />
-                                <XAxis dataKey="division" tickLine={false} axisLine={false} tickMargin={8} angle={-45} textAnchor="end" height={60} />
-                                <YAxis unit="%" />
-                                <Tooltip cursor={false} content={<ChartTooltipContent formatter={(value) => `${value}%`} />} />
-                                <Bar dataKey="progress" fill="var(--color-progress)" radius={4} />
-                            </RechartsBarChart>
-                        </ResponsiveContainer>
-                    </ChartContainer>
-                )}
-            </CardContent>
-        </Card>
-
-        <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>Tugas Prioritas Saya</CardTitle>
-                 <Button size="sm" onClick={() => setIsAddTaskOpen(true)}>
-                    <PlusCircle className="mr-2 h-4 w-4"/>
-                    Tambah Tugas Baru
-                </Button>
-            </CardHeader>
-            <CardContent>
-                 <TasksTable tasks={myTasks || []} isLoading={tasksLoading} />
-            </CardContent>
-        </Card>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <CardTitle>Tugas Prioritas Saya</CardTitle>
+                         <Button size="sm" onClick={() => setIsAddTaskOpen(true)}>
+                            <PlusCircle className="mr-2 h-4 w-4"/>
+                            Tambah Tugas Baru
+                        </Button>
+                    </CardHeader>
+                    <CardContent>
+                         <TasksTable tasks={myTasks || []} isLoading={tasksLoading} />
+                    </CardContent>
+                </Card>
+            </TabsContent>
+            <TabsContent value="approvals">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Permintaan Dana Tertunda</CardTitle>
+                        <CardDescription>
+                            Permintaan dana dari berbagai divisi yang menunggu persetujuan Anda.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Divisi</TableHead>
+                                    <TableHead>Item</TableHead>
+                                    <TableHead>Diajukan oleh</TableHead>
+                                    <TableHead>Tanggal</TableHead>
+                                    <TableHead className="text-right">Jumlah</TableHead>
+                                    <TableHead className="text-center">Aksi</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {requestsLoading ? (
+                                    <>
+                                        <TableRow><TableCell colSpan={6}><Skeleton className="h-10 w-full"/></TableCell></TableRow>
+                                        <TableRow><TableCell colSpan={6}><Skeleton className="h-10 w-full"/></TableCell></TableRow>
+                                    </>
+                                ) : pendingRequests && pendingRequests.length > 0 ? (
+                                    pendingRequests.map(req => (
+                                        <TableRow key={req.id}>
+                                            <TableCell>{req.division}</TableCell>
+                                            <TableCell>{req.item}</TableCell>
+                                            <TableCell>{req.requestedByName}</TableCell>
+                                            <TableCell>{formatDate(req.createdAt)}</TableCell>
+                                            <TableCell className="text-right">{formatCurrency(req.amount)}</TableCell>
+                                            <TableCell className="flex justify-center gap-2">
+                                                <Button size="icon" variant="outline" className="text-green-600 hover:text-green-700 hover:bg-green-50" onClick={() => handleApproval(req.id!, 'Approved')}>
+                                                    <ThumbsUp className="h-4 w-4"/>
+                                                </Button>
+                                                <Button size="icon" variant="outline" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleApproval(req.id!, 'Rejected')}>
+                                                    <ThumbsDown className="h-4 w-4"/>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center h-24">
+                                            Tidak ada permintaan dana yang tertunda.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </TabsContent>
+        </Tabs>
       </div>
       {user && allUsers && (
         <AddTaskDialog 

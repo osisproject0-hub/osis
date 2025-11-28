@@ -6,12 +6,14 @@ export interface User {
   email: string | null;
   name: string;
   photoURL: string | null;
-  position: UserPosition;
+  position: string;
   divisionId?: string;
   divisionName: string;
   accessLevel: number;
 }
 
+// This is no longer a strict type, as positions are now dynamically managed.
+// It remains here as a reference to the kinds of positions that might exist.
 export type UserPosition =
   | 'Ketua OSIS'
   | 'Wakil Ketua OSIS'

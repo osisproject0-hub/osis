@@ -115,8 +115,8 @@ export default function FinancePage() {
                 <TableBody>
                   {reportsLoading ? (
                     <>
-                      <TableRow><TableCell colSpan={5}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
-                      <TableRow><TableCell colSpan={5}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
+                      <TableRow><TableCell colSpan={user?.position?.includes('Bendahara') ? 5 : 4}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
+                      <TableRow><TableCell colSpan={user?.position?.includes('Bendahara') ? 5 : 4}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
                     </>
                   ) : financialReports?.length ? (
                     financialReports.map((report) => (
@@ -157,7 +157,7 @@ export default function FinancePage() {
                     ))
                   ) : (
                      <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center">
+                      <TableCell colSpan={user?.position?.includes('Bendahara') ? 5 : 4} className="h-24 text-center">
                         Belum ada laporan keuangan.
                       </TableCell>
                     </TableRow>
@@ -181,7 +181,7 @@ export default function FinancePage() {
                     <TableHead>Item</TableHead>
                     <TableHead>Jumlah</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Aksi</TableHead>
+                    <TableHead className="w-[50px]"><span className='sr-only'>Aksi</span></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -200,9 +200,19 @@ export default function FinancePage() {
                           <Badge variant={statusVariant[request.status]}>{request.status}</Badge>
                         </TableCell>
                         <TableCell>
-                          <Button variant="outline" size="sm">
-                            Detail
-                          </Button>
+                           <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                        <span className="sr-only">Buka menu</span>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem>
+                                        Lihat Detail
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </TableCell>
                       </TableRow>
                     ))

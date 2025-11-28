@@ -60,10 +60,10 @@ export function AnggotaDashboard() {
             Dashboard untuk {user.name}.
           </p>
         </div>
-        <button onClick={() => setIsFundRequestOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2">
-            <PlusCircle className="mr-2 h-4 w-4" />
+        <Button onClick={() => setIsFundRequestOpen(true)} >
+            <HandCoins className="mr-2 h-4 w-4" />
             Ajukan Dana
-        </button>
+        </Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">

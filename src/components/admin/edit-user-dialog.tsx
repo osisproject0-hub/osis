@@ -38,6 +38,7 @@ import { doc } from 'firebase/firestore';
 const userSchema = z.object({
   name: z.string().min(3, 'Nama minimal 3 karakter.'),
   email: z.string().email('Format email tidak valid.').optional(),
+  photoURL: z.string().url('URL Foto tidak valid').or(z.literal('')),
   position: z.string({ required_error: 'Pilih posisi untuk anggota.'}),
   accessLevel: z.coerce.number().min(0).max(10),
   divisionId: z.string(),
@@ -85,6 +86,7 @@ export function EditUserDialog({
     values: {
       name: user.name,
       email: user.email || '',
+      photoURL: user.photoURL || '',
       position: user.position,
       accessLevel: user.accessLevel,
       divisionId: user.divisionId || '',
@@ -116,6 +118,7 @@ export function EditUserDialog({
     const userRef = doc(firestore, 'users', user.id);
     updateDocumentNonBlocking(userRef, {
         name: data.name,
+        photoURL: data.photoURL,
         position: data.position,
         accessLevel: data.accessLevel,
         divisionId: data.divisionId,
@@ -161,6 +164,19 @@ export function EditUserDialog({
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="john.doe@sekolah.id" {...field} disabled />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="photoURL"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>URL Foto Profil</FormLabel>
+                  <FormControl>
+                    <Input type="url" placeholder="https://..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
