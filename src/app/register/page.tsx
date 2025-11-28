@@ -20,6 +20,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const registerSchema = z.object({
   name: z.string().min(3, { message: 'Nama lengkap minimal 3 karakter.' }),
@@ -35,6 +36,7 @@ export default function RegisterPage() {
   const firestore = useFirestore();
   const { user, isLoading: isUserLoading } = useUser();
   const { toast } = useToast();
+  const [isFirebaseReady, setIsFirebaseReady] = React.useState(false);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -45,11 +47,16 @@ export default function RegisterPage() {
     },
   });
 
-  const firebaseReady = !!auth && !!firestore;
-  const isRegistering = form.formState.isSubmitting;
+  const isSubmitting = form.formState.isSubmitting;
+
+  React.useEffect(() => {
+    if (auth && firestore) {
+      setIsFirebaseReady(true);
+    }
+  }, [auth, firestore]);
 
   const handleRegister = async (data: RegisterFormValues) => {
-    if (!firebaseReady) {
+    if (!auth || !firestore) {
       toast({
         variant: 'destructive',
         title: 'Gagal Mendaftar',
@@ -127,28 +134,7 @@ export default function RegisterPage() {
 
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
   
-  const isLoading = isRegistering || isUserLoading || !firebaseReady;
-  
-  const getButtonContent = () => {
-    if (!firebaseReady) {
-      return (
-        <>
-          <Loader2 className="animate-spin" />
-          Inisialisasi...
-        </>
-      );
-    }
-    if (isLoading) {
-      return (
-        <>
-          <Loader2 className="animate-spin" />
-          Mendaftar...
-        </>
-      );
-    }
-    return 'Daftar';
-  };
-
+  const isLoading = isSubmitting || isUserLoading;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
@@ -172,62 +158,75 @@ export default function RegisterPage() {
             <CardTitle className="font-headline text-4xl">Buat Akun</CardTitle>
             <CardDescription className="pt-2">Daftar untuk mengakses Nusantara OSIS Hub</CardDescription>
           </CardHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleRegister)}>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nama Lengkap</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Nama Anda" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="email@sekolah.id" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Kata Sandi</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
-                   {getButtonContent()}
-                </Button>
-              </CardContent>
-            </form>
-          </Form>
-          <CardFooter className="flex flex-col items-center justify-center text-sm">
-             <p className="text-muted-foreground">
-                Sudah punya akun?{' '}
-                <Link href="/login" className="font-semibold text-primary hover:underline">
-                    Masuk di sini
-                </Link>
-             </p>
-          </CardFooter>
+          {!isFirebaseReady ? (
+            <CardContent className="flex flex-col items-center justify-center space-y-4 h-72">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-muted-foreground">Menginisialisasi...</p>
+            </CardContent>
+          ) : (
+            <>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleRegister)}>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nama Lengkap</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Nama Anda" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input placeholder="email@sekolah.id" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Kata Sandi</FormLabel>
+                        <FormControl>
+                          <Input type="password" placeholder="••••••••" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      'Daftar'
+                    )}
+                  </Button>
+                </CardContent>
+              </form>
+            </Form>
+            <CardFooter className="flex flex-col items-center justify-center text-sm">
+              <p className="text-muted-foreground">
+                  Sudah punya akun?{' '}
+                  <Link href="/login" className="font-semibold text-primary hover:underline">
+                      Masuk di sini
+                  </Link>
+              </p>
+            </CardFooter>
+            </>
+          )}
         </Card>
       </div>
     </div>

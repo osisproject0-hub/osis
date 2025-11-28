@@ -18,6 +18,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Alamat email tidak valid.' }),
@@ -31,6 +32,7 @@ export default function LoginPage() {
   const auth = useAuth();
   const { user, isLoading: isUserLoading } = useUser();
   const { toast } = useToast();
+  const [isFirebaseReady, setIsFirebaseReady] = React.useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -40,15 +42,20 @@ export default function LoginPage() {
     },
   });
 
-  const firebaseReady = !!auth;
-  const isLoggingIn = form.formState.isSubmitting;
+  const isSubmitting = form.formState.isSubmitting;
+
+  React.useEffect(() => {
+    if (auth) {
+      setIsFirebaseReady(true);
+    }
+  }, [auth]);
 
   const handleLogin = async (data: LoginFormValues) => {
-    if (!firebaseReady) {
+    if (!auth) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Firebase not initialized. Please try again later.',
+        description: 'Firebase belum siap. Silakan coba lagi.',
       });
       return;
     }
@@ -83,7 +90,7 @@ export default function LoginPage() {
 
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
   
-  const isLoading = isLoggingIn || isUserLoading || !firebaseReady;
+  const isLoading = isSubmitting || isUserLoading;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
@@ -107,49 +114,59 @@ export default function LoginPage() {
             <CardTitle className="font-headline text-4xl">Nusantara OSIS Hub</CardTitle>
             <CardDescription className="pt-2">Digital Command Center</CardDescription>
           </CardHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleLogin)}>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input placeholder="email@sekolah.id" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Kata Sandi</FormLabel>
-                      <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                 <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
-                  {isLoading ? <Loader2 className="animate-spin" /> : 'Masuk'}
-                </Button>
-              </CardContent>
-            </form>
-          </Form>
-          <CardFooter className="flex flex-col items-center justify-center text-sm">
-             <p className="text-muted-foreground">
-                Belum punya akun?{' '}
-                <Link href="/register" className="font-semibold text-primary hover:underline">
-                    Daftar di sini
-                </Link>
-             </p>
-          </CardFooter>
+          
+          {!isFirebaseReady ? (
+            <CardContent className="flex flex-col items-center justify-center space-y-4 h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <p className="text-muted-foreground">Menginisialisasi...</p>
+            </CardContent>
+          ) : (
+            <>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(handleLogin)}>
+                  <CardContent className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="email@sekolah.id" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Kata Sandi</FormLabel>
+                          <FormControl>
+                            <Input type="password" placeholder="••••••••" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
+                      {isLoading ? <Loader2 className="animate-spin" /> : 'Masuk'}
+                    </Button>
+                  </CardContent>
+                </form>
+              </Form>
+              <CardFooter className="flex flex-col items-center justify-center text-sm">
+                <p className="text-muted-foreground">
+                    Belum punya akun?{' '}
+                    <Link href="/register" className="font-semibold text-primary hover:underline">
+                        Daftar di sini
+                    </Link>
+                </p>
+              </CardFooter>
+            </>
+          )}
         </Card>
       </div>
     </div>
