@@ -1,5 +1,6 @@
-import { aiBriefingForKetua, AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
+import { aiBriefingForKetua } from '@/ai/flows/ai-briefing-for-ketua';
 import { NextResponse } from 'next/server';
+import { AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
 
 export async function POST(req: Request) {
   try {

@@ -42,7 +42,7 @@ const prompt = ai.definePrompt({
 });
 
 
-const aiBriefingForKetuaFlow = ai.defineFlow(
+export const aiBriefingForKetua = ai.defineFlow(
   {
     name: 'aiBriefingForKetuaFlow',
     inputSchema: AIBriefingForKetuaInputSchema,
@@ -53,7 +53,3 @@ const aiBriefingForKetuaFlow = ai.defineFlow(
     return output!;
   }
 );
-
-export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {
-    return aiBriefingForKetuaFlow(input);
-}
