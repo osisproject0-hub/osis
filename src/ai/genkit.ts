@@ -1,4 +1,3 @@
-// ✅ Cukup import library utamanya saja
 import { genkit } from 'genkit';
 import { googleAI } from '@genkit-ai/google-genai';
 
