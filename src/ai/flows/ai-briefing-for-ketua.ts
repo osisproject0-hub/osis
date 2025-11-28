@@ -25,7 +25,6 @@ const AIBriefingForKetuaOutputSchema = z.object({
 });
 export type AIBriefingForKetuaOutput = z.infer<typeof AIBriefingForKetuaOutputSchema>;
 
-
 const prompt = ai.definePrompt({
     name: 'aiBriefingForKetuaPrompt',
     input: { schema: AIBriefingForKetuaInputSchema },
@@ -42,7 +41,7 @@ const prompt = ai.definePrompt({
 });
 
 
-export const aiBriefingForKetua = ai.defineFlow(
+const aiBriefingForKetuaFlow = ai.defineFlow(
   {
     name: 'aiBriefingForKetuaFlow',
     inputSchema: AIBriefingForKetuaInputSchema,
@@ -53,3 +52,7 @@ export const aiBriefingForKetua = ai.defineFlow(
     return output!;
   }
 );
+
+export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {
+    return aiBriefingForKetuaFlow(input);
+}
