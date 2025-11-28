@@ -125,6 +125,19 @@ export interface Election {
     endDate?: Timestamp;
 }
 
+export interface News {
+    id?: string;
+    title: string;
+    slug: string;
+    content: string;
+    imageUrl: string;
+    imageHint?: string;
+    authorName: string;
+    authorId: string;
+    createdAt: Timestamp | string;
+    updatedAt: Timestamp | string;
+}
+
 // AI Flow Types
 export const AiNotulenForSecretariesInputSchema = z.object({
   audioDataUri: z

@@ -243,6 +243,24 @@
         "endDate": { "type": "string", "format": "date-time" }
       },
       "required": ["title", "isActive"]
+    },
+     "News": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "News",
+      "type": "object",
+      "description": "Represents a news article or announcement.",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string", "description": "A URL-friendly version of the title." },
+        "content": { "type": "string", "description": "The full content of the article, can contain Markdown." },
+        "imageUrl": { "type": "string", "format": "uri" },
+        "imageHint": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "slug", "content", "authorName", "authorId", "createdAt", "updatedAt"]
     }
   },
   "auth": { "providers": ["password", "anonymous"] },
@@ -286,6 +304,10 @@
     "/election/{electionId}": {
       "schema": { "$ref": "#/entities/Election" },
       "description": "Stores the state of the current election."
+    },
+    "/news/{newsId}": {
+      "schema": { "$ref": "#/entities/News" },
+      "description": "Stores news articles for the public portal."
     }
   }
 }

@@ -85,5 +85,16 @@ service cloud.firestore {
                       && !exists(/databases/$(database)/documents/votes/$(request.auth.uid));
       allow delete, update: if false;
     }
+
+    // News Rules
+    function isNewsPublisher() {
+      let user = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      return user.divisionName == 'Divisi Teknologi & Komunikasi' || user.accessLevel >= 10;
+    }
+    
+    match /news/{newsId} {
+        allow read: if true;
+        allow write: if isSignedIn() && isNewsPublisher();
+    }
   }
 }

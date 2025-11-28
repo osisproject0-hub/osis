@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase, FileSignature, Shield, Vote } from 'lucide-react';
+import { LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase, FileSignature, Shield, Vote, Newspaper } from 'lucide-react';
 import Image from 'next/image';
 
 import { useUser } from '@/firebase';
@@ -23,6 +23,7 @@ const menuItems = [
   { href: '/dashboard/notulen', icon: BookText, label: 'AI Notulen', requiredAccess: 8 },
   { href: '/dashboard/surat', icon: FileSignature, label: 'AI Surat', requiredAccess: 8 },
   { href: '/dashboard/finance', icon: DollarSign, label: 'Finance', requiredAccess: 8 },
+  { href: '/dashboard/berita', icon: Newspaper, label: 'Manajemen Berita', requiredAccess: 5 },
   { href: '/dashboard/divisions', icon: Briefcase, label: 'Divisions', requiredAccess: 7 },
   { href: '/dashboard/members', icon: Users, label: 'Members', requiredAccess: 9 },
   { href: '/dashboard/admin', icon: Shield, label: 'Admin Panel', requiredAccess: 10 },
@@ -33,6 +34,8 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { user } = useUser();
   const accessLevel = user?.accessLevel ?? 0;
+  
+  const isNewsPublisher = user?.divisionName === 'Divisi Teknologi & Komunikasi' || accessLevel >= 10;
 
   return (
     <Sidebar collapsible="icon" variant="sidebar">
@@ -45,12 +48,18 @@ export function AppSidebar() {
       <Separator />
       <SidebarContent>
         <SidebarMenu>
-          {menuItems.map((item) =>
-            accessLevel >= item.requiredAccess ? (
+          {menuItems.map((item) => {
+            if (item.href === '/dashboard/berita') {
+                if (!isNewsPublisher) return null;
+            } else if (accessLevel < item.requiredAccess) {
+                return null;
+            }
+            
+            return (
               <SidebarMenuItem key={item.href}>
                 <Link href={item.href}>
                   <SidebarMenuButton
-                    isActive={pathname === item.href}
+                    isActive={pathname.startsWith(item.href) && (item.href !== '/dashboard' || pathname === '/dashboard')}
                     tooltip={{ children: item.label }}
                   >
                     <item.icon />
@@ -58,8 +67,8 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-            ) : null
-          )}
+            )
+          })}
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>

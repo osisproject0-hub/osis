@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Target, Users, BookOpen, GalleryHorizontal, Vote } from 'lucide-react';
+import { Target, Users, BookOpen, GalleryHorizontal, Vote, Newspaper } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
@@ -16,6 +16,7 @@ const navItems = [
     { href: '/portal/struktur-organisasi', label: 'Struktur Organisasi', icon: Users },
     { href: '/portal/program-kerja', label: 'Program Kerja', icon: BookOpen },
     { href: '/portal/galeri', label: 'Galeri', icon: GalleryHorizontal },
+    { href: '/portal/berita', label: 'Berita', icon: Newspaper },
 ];
 
 export default function PortalLayout({
@@ -41,7 +42,7 @@ export default function PortalLayout({
                         <nav className="hidden md:flex items-center gap-2">
                             {navItems.map((item) => (
                                 <Link key={item.href} href={item.href} passHref>
-                                    <Button variant={pathname === item.href ? 'secondary' : 'ghost'}>
+                                    <Button variant={pathname.startsWith(item.href) ? 'secondary' : 'ghost'}>
                                         <item.icon className="mr-2 h-4 w-4" />
                                         {item.label}
                                     </Button>
