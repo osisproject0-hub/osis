@@ -79,7 +79,7 @@ export default function RegisterPage() {
           name: data.name,
           photoURL: null,
           position: mockUser.position,
-          divisionId: mockUser.divisionId || null,
+          divisionId: mockUser.divisionId || '',
           divisionName: mockUser.divisionName,
           accessLevel: mockUser.accessLevel,
         });
@@ -108,6 +108,7 @@ export default function RegisterPage() {
       if (error.code === 'auth/email-already-in-use') {
         description = 'Alamat email ini sudah terdaftar. Silakan coba masuk.';
       }
+      console.error("Registration Error: ", error);
       toast({
         variant: 'destructive',
         title: 'Gagal Mendaftar',
