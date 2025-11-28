@@ -114,7 +114,7 @@ export default function EVotingPage() {
           <div className="container mx-auto flex justify-between items-center">
                 <Link href="/portal" className="flex items-center gap-2">
                   <Bot className="w-8 h-8 text-primary" />
-                  <span className="font-headline text-xl font-bold text-foreground">Nusantara OSIS Hub</span>
+                  <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
               </Link>
               {authUser && <span className="text-sm text-muted-foreground">Masuk sebagai {authUser.email}</span>}
           </div>

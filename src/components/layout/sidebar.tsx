@@ -38,7 +38,7 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
             <Bot className="w-8 h-8 text-primary-foreground" />
-            <span className="font-headline text-lg text-primary-foreground">Nusantara Hub</span>
+            <span className="font-headline text-lg text-primary-foreground">OSIS SMAKDA</span>
         </div>
       </SidebarHeader>
       <Separator />

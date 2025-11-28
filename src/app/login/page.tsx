@@ -109,7 +109,7 @@ export default function LoginPage() {
             <div className="mx-auto mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
                 <Bot className="w-8 h-8 text-primary" />
             </div>
-            <CardTitle className="font-headline text-4xl">Nusantara OSIS Hub</CardTitle>
+            <CardTitle className="font-headline text-4xl">OSIS SMAKDA</CardTitle>
             <CardDescription className="pt-2">Digital Command Center</CardDescription>
           </CardHeader>
           

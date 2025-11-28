@@ -54,7 +54,7 @@ export default function PortalPage() {
             <div className="container mx-auto flex justify-between items-center">
                  <Link href="/portal" className="flex items-center gap-2">
                     <Bot className="w-8 h-8 text-primary" />
-                    <span className="font-headline text-xl font-bold text-foreground">Nusantara OSIS Hub</span>
+                    <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
                 </Link>
                 {election?.isActive && (
                   <Link href="/portal/evoting">

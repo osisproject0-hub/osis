@@ -6,8 +6,8 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'Nusantara OSIS Hub',
-  description: 'Digital Command Center for OSIS SMK LPPMRI 2 KEDUNGREJA',
+  title: 'OSIS SMAKDA',
+  description: 'Digital Command Center for OSIS SMAKDA',
 };
 
 export default function RootLayout({
