@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -26,6 +25,12 @@ export const AIBriefingForKetuaOutputSchema = z.object({
 });
 export type AIBriefingForKetuaOutput = z.infer<typeof AIBriefingForKetuaOutputSchema>;
 
+// This function can be called from other server-side code.
+export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {
+  return aiBriefingForKetuaFlow(input);
+}
+
+
 const prompt = ai.definePrompt({
     name: 'aiBriefingForKetuaPrompt',
     input: { schema: AIBriefingForKetuaInputSchema },
@@ -42,7 +47,7 @@ const prompt = ai.definePrompt({
 });
 
 
-export const aiBriefingForKetuaFlow = ai.defineFlow(
+const aiBriefingForKetuaFlow = ai.defineFlow(
   {
     name: 'aiBriefingForKetuaFlow',
     inputSchema: AIBriefingForKetuaInputSchema,
