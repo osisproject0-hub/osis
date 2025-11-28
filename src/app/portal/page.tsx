@@ -1,71 +1,45 @@
 'use client';
 
 import Image from 'next/image';
-import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy, doc } from 'firebase/firestore';
-import type { User, Division, WorkProgram, GalleryImage, Election } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Briefcase, Bot, Vote } from 'lucide-react';
+import { Target, Users, BookOpen, GalleryHorizontal } from 'lucide-react';
 import Link from 'next/link';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
+
+const featureCards = [
+    {
+        icon: Target,
+        title: "Visi & Misi",
+        description: "Lihat landasan dan tujuan yang menjadi pedoman organisasi kami.",
+        href: "/portal/visi-misi"
+    },
+    {
+        icon: Users,
+        title: "Struktur Organisasi",
+        description: "Kenali siapa saja yang berada di balik layar OSIS SMAKDA.",
+        href: "/portal/struktur-organisasi"
+    },
+    {
+        icon: BookOpen,
+        title: "Program Kerja",
+        description: "Temukan program-program unggulan yang kami jalankan.",
+        href: "/portal/program-kerja"
+    },
+    {
+        icon: GalleryHorizontal,
+        title: "Galeri Kegiatan",
+        description: "Jelajahi momen-momen terbaik dari berbagai acara yang telah kami selenggarakan.",
+        href: "/portal/galeri"
+    }
+];
 
 export default function PortalPage() {
-  const firestore = useFirestore();
   const heroImage = PlaceHolderImages.find(p => p.id === 'login-background');
   
-  const usersQuery = useMemoFirebase(() => 
-    firestore ? query(collection(firestore, 'users'), orderBy('accessLevel', 'desc')) : null
-  , [firestore]);
-  const { data: members, isLoading: membersLoading } = useCollection<User>(usersQuery);
-
-  const divisionsQuery = useMemoFirebase(() =>
-    firestore ? query(collection(firestore, 'divisions'), orderBy('order', 'asc')) : null
-  , [firestore]);
-  const { data: divisions, isLoading: divisionsLoading } = useCollection<Division>(divisionsQuery);
-  
-  const workProgramsQuery = useMemoFirebase(() =>
-    firestore ? query(collection(firestore, 'workPrograms'), orderBy('order', 'asc')) : null
-  , [firestore]);
-  const { data: workPrograms, isLoading: programsLoading } = useCollection<WorkProgram>(workProgramsQuery);
-
-  const galleryQuery = useMemoFirebase(() =>
-    firestore ? query(collection(firestore, 'galleryImages'), orderBy('order', 'asc')) : null
-  , [firestore]);
-  const { data: galleryImages, isLoading: galleryLoading } = useCollection<GalleryImage>(galleryQuery);
-
-  const electionRef = useMemoFirebase(() => firestore ? doc(firestore, 'election', 'main-election') : null, [firestore]);
-  const { data: election, isLoading: electionLoading } = useDoc<Election>(electionRef);
-
-
-  const membersByDivision = (divisions || []).map(division => ({
-      ...division,
-      members: members?.filter(m => m.divisionId === division.id) || []
-  })).filter(d => d.members.length > 0);
-
-  const isLoading = membersLoading || divisionsLoading || programsLoading || galleryLoading || electionLoading;
-
   return (
-    <div className="bg-background animate-in fade-in-50">
-       <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
-            <div className="container mx-auto flex justify-between items-center">
-                 <Link href="/portal" className="flex items-center gap-2">
-                    <Bot className="w-8 h-8 text-primary" />
-                    <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
-                </Link>
-                {election?.isActive && (
-                  <Link href="/portal/evoting">
-                      <Button className="animate-in fade-in zoom-in-95">
-                          <Vote className="mr-2 h-4 w-4" />
-                          E-Voting Pemilihan Ketua OSIS
-                      </Button>
-                  </Link>
-                )}
-            </div>
-        </header>
+    <div className="animate-in fade-in-50">
       <main>
         {/* Hero Section */}
         <section className="relative h-[60vh] flex items-center justify-center text-center text-white">
@@ -90,151 +64,35 @@ export default function PortalPage() {
           </div>
         </section>
 
-        {/* Visi Misi Section */}
-        <section className="py-12 md:py-20 text-center">
-            <div className="container mx-auto px-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
-                 <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4">
-                    Visi & Misi
+        {/* Features Section */}
+        <section className="py-12 md:py-20">
+            <div className="container mx-auto px-4">
+                 <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-12">
+                    Jelajahi Portal Kami
                 </h2>
-                <p className="text-xl text-primary font-semibold mb-6">"Mewujudkan OSIS sebagai wadah aspirasi siswa yang aktif, kreatif, dan berakhlak mulia."</p>
-                <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                    <Card className="hover:shadow-lg transition-shadow">
-                        <CardHeader><CardTitle>Aktif</CardTitle></CardHeader>
-                        <CardContent><p>Mendorong partisipasi aktif siswa dalam setiap kegiatan sekolah.</p></CardContent>
-                    </Card>
-                     <Card className="hover:shadow-lg transition-shadow">
-                        <CardHeader><CardTitle>Kreatif</CardTitle></CardHeader>
-                        <CardContent><p>Menyelenggarakan program dan acara yang inovatif dan inspiratif.</p></CardContent>
-                    </Card>
-                     <Card className="hover:shadow-lg transition-shadow">
-                        <CardHeader><CardTitle>Berakhlak Mulia</CardTitle></CardHeader>
-                        <CardContent><p>Menjunjung tinggi nilai-nilai moral dan etika dalam berorganisasi.</p></CardContent>
-                    </Card>
-                </div>
-            </div>
-        </section>
-
-        {/* Organization Structure Section */}
-        <section id="structure" className="py-12 md:py-20 bg-secondary/20">
-          <div className="container mx-auto px-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
-            <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
-              Struktur Organisasi
-            </h2>
-            <div className="space-y-10">
-              {isLoading ? (
-                Array.from({ length: 4 }).map((_, i) => <DivisionSkeleton key={i} />)
-              ) : (
-                membersByDivision.map(division => (
-                  <div key={division.id}>
-                    <h3 className='font-headline text-2xl mb-4 flex items-center gap-2'><Briefcase className="h-6 w-6 text-primary" /> {division.name}</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                      {division.members.map(member => (
-                        <Link key={member.uid} href={`/profile/${member.uid}`} className="block group">
-                            <Card className="h-full hover:shadow-xl hover:border-primary/50 transition-all text-center p-2 transform hover:-translate-y-1 duration-300">
-                               <CardContent className="p-2">
-                                <Avatar className="h-24 w-24 mb-2 mx-auto border-2 border-muted group-hover:border-primary transition-colors">
-                                    <AvatarImage src={member.photoURL || ''} alt={member.name} className="object-cover"/>
-                                    <AvatarFallback>{member.name.split(' ').map(n=>n[0]).join('').substring(0,2)}</AvatarFallback>
-                                </Avatar>
-                                <p className="font-semibold text-sm leading-tight">{member.name}</p>
-                                <p className="text-xs text-muted-foreground mt-1">{member.position}</p>
-                               </CardContent>
-                            </Card>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </section>
-
-         {/* Work Program Section */}
-        <section id="work-program" className="py-12 md:py-20">
-          <div className="container mx-auto px-4 max-w-4xl animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
-            <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
-              Program Kerja Unggulan
-            </h2>
-            {isLoading ? (
-                <div className='space-y-2'>
-                    <Skeleton className='h-12 w-full' />
-                    <Skeleton className='h-12 w-full' />
-                    <Skeleton className='h-12 w-full' />
-                </div>
-            ) : (
-                <Accordion type="single" collapsible className="w-full">
-                {workPrograms?.map(item => (
-                    <AccordionItem value={item.id} key={item.id}>
-                        <AccordionTrigger className='text-lg font-semibold'>{item.division}</AccordionTrigger>
-                        <AccordionContent>
-                            <ul className='list-disc pl-5 space-y-2'>
-                                {item.programs.map(prog => <li key={prog}>{prog}</li>)}
-                            </ul>
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-                </Accordion>
-            )}
-          </div>
-        </section>
-
-        {/* Gallery Section */}
-        <section id="gallery" className="py-12 md:py-20 bg-secondary/20">
-            <div className="container mx-auto px-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
-                <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
-                Galeri Kegiatan
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {isLoading ? (
-                        Array.from({length: 6}).map((_, i) => (
-                           <Card key={i} className='overflow-hidden group'>
-                             <div className="aspect-video relative">
-                                <Skeleton className='h-full w-full' />
-                             </div>
-                             <CardContent className='p-4 space-y-2'>
-                                 <Skeleton className='h-5 w-3/4' />
-                             </CardContent>
-                        </Card>
-                        ))
-                    ) : (
-                        galleryImages?.map(image => (
-                            <Card key={image.id} className='overflow-hidden group transition-all duration-300 hover:shadow-xl'>
-                                <div className="aspect-video relative">
-                                    <Image src={image.imageUrl} alt={image.description} fill className="object-cover transition-transform group-hover:scale-105" data-ai-hint={image.imageHint} />
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {featureCards.map((feature, index) => (
+                        <Card key={index} className="flex flex-col hover:shadow-lg transition-shadow duration-300 animate-in fade-in-50 slide-in-from-bottom-5" style={{animationDelay: `${index * 100}ms`}}>
+                            <CardHeader className="flex-row items-start gap-4">
+                                <feature.icon className="w-10 h-10 text-primary flex-shrink-0"/>
+                                <div>
+                                    <CardTitle>{feature.title}</CardTitle>
+                                    <CardDescription className="mt-1">{feature.description}</CardDescription>
                                 </div>
-                                <CardContent className='p-4'>
-                                    <p className='font-semibold'>{image.description}</p>
-                                </CardContent>
-                            </Card>
-                        ))
-                    )}
+                            </CardHeader>
+                            <CardContent className="mt-auto">
+                                <Link href={feature.href} className="w-full">
+                                    <Button variant="outline" className="w-full">
+                                        Lihat Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
             </div>
         </section>
       </main>
-      <footer className="bg-primary text-primary-foreground py-8">
-          <div className="container mx-auto text-center">
-              <p>&copy; 2024 OSIS SMAKDA. All rights reserved.</p>
-          </div>
-      </footer>
     </div>
   );
 }
-
-const DivisionSkeleton = () => (
-    <div>
-        <Skeleton className="h-8 w-1/3 mb-4" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {Array.from({length: 4}).map((_, i) => (
-                <Card key={i} className='p-2'>
-                    <CardContent className="p-2 flex flex-col items-center text-center">
-                        <Skeleton className="h-24 w-24 rounded-full mb-2" />
-                        <Skeleton className="h-5 w-32 mb-1" />
-                        <Skeleton className="h-4 w-24" />
-                    </CardContent>
-                </Card>
-            ))}
-        </div>
-    </div>
-)
