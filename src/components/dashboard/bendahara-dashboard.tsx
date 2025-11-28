@@ -7,7 +7,7 @@ import type { Task, User as UserType, FundRequest, FinancialReport } from '@/lib
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { DollarSign, PlusCircle } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
 import { AddTaskDialog } from '@/components/add-task-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';

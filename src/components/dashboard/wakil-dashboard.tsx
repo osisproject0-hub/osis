@@ -5,8 +5,6 @@ import * as React from 'react';
 import { collection, query, where } from 'firebase/firestore';
 import type { Task, User as UserType } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
-import { Button } from '@/components/ui/button';
-import { PlusCircle } from 'lucide-react';
 import { AddTaskDialog } from '@/components/add-task-dialog';
 
 export function WakilDashboard() {
@@ -41,13 +39,9 @@ export function WakilDashboard() {
                 Monitoring synchronization and delegated tasks.
             </p>
         </div>
-        <Button onClick={() => setIsAddTaskOpen(true)}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Tambah Tugas Baru
-        </Button>
       </div>
 
-       <TasksTable tasks={myTasks || []} title="My Delegated Tasks" isLoading={myTasksLoading} />
+       <TasksTable tasks={myTasks || []} title="My Delegated Tasks" isLoading={myTasksLoading} showAddButton />
        <TasksTable tasks={allOngoingTasks || []} title="All Ongoing Tasks" isLoading={allTasksLoading} />
       
        {user && allUsers && (
