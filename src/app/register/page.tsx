@@ -52,8 +52,8 @@ export default function RegisterPage() {
     if (!firebaseReady) {
       toast({
         variant: 'destructive',
-        title: 'Error',
-        description: 'Firebase not initialized. Please try again later.',
+        title: 'Gagal Mendaftar',
+        description: 'Layanan Firebase belum siap. Silakan coba lagi sebentar.',
       });
       return;
     }
@@ -134,7 +134,7 @@ export default function RegisterPage() {
       return (
         <>
           <Loader2 className="animate-spin" />
-          Initializing Firebase...
+          Inisialisasi...
         </>
       );
     }

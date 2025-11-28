@@ -64,6 +64,8 @@ export default function LoginPage() {
       let description = 'Terjadi kesalahan saat mencoba masuk.';
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
         description = 'Email atau kata sandi yang Anda masukkan salah.';
+      } else if (error.code === 'auth/configuration-not-found') {
+        description = 'Konfigurasi Firebase tidak ditemukan. Silakan refresh dan coba lagi.';
       }
       toast({
         variant: 'destructive',
