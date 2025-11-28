@@ -73,6 +73,15 @@ export default function SecretSignupPage() {
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: '',
+      email: '',
+      password: '',
+      position: '',
+      accessLevel: 0,
+      divisionId: '',
+      divisionName: '',
+    },
   });
   
   const { watch, setValue } = form;
