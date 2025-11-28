@@ -31,6 +31,14 @@ export default function LoginPage() {
   const auth = useAuth();
   const { user, isLoading: isUserLoading } = useUser();
   const { toast } = useToast();
+  
+  const [isFirebaseReady, setIsFirebaseReady] = React.useState(false);
+
+  React.useEffect(() => {
+    if(auth) {
+      setIsFirebaseReady(true);
+    }
+  }, [auth]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -80,7 +88,7 @@ export default function LoginPage() {
 
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
   
-  const isLoading = isSubmitting || isUserLoading || !auth;
+  const isLoading = isSubmitting || isUserLoading || !isFirebaseReady;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
@@ -105,7 +113,7 @@ export default function LoginPage() {
             <CardDescription className="pt-2">Digital Command Center</CardDescription>
           </CardHeader>
           
-          {!auth ? (
+          {!isFirebaseReady ? (
             <CardContent className="flex flex-col items-center justify-center space-y-4 h-64">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-muted-foreground">Menginisialisasi...</p>
