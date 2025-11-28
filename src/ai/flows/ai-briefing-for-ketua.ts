@@ -54,5 +54,5 @@ const aiBriefingForKetuaFlow = ai.defineFlow(
 );
 
 export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {
-    return aiBriefingForKetuaFlow(input);
+    return await aiBriefingForKetuaFlow(input);
 }
