@@ -9,11 +9,14 @@ import Image from 'next/image';
 import { collection, query, where } from 'firebase/firestore';
 import type { Task, User } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckCircle2, ListTodo, Loader } from 'lucide-react';
+import { CheckCircle2, ListTodo, Loader, HandCoins, PlusCircle } from 'lucide-react';
+import { AddFundRequestDialog } from '@/components/add-fund-request-dialog';
+
 
 export function AnggotaDashboard() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
+  const [isFundRequestOpen, setIsFundRequestOpen] = React.useState(false);
 
   const myTasksQuery = useMemoFirebase(() =>
     user ? query(collection(firestore, 'tasks'), where('assignedToUID', '==', user.uid)) : null
@@ -46,14 +49,21 @@ export function AnggotaDashboard() {
     : user.divisionName?.replace('Anggota ', '');
 
   return (
+    <>
     <div className="space-y-6">
-      <div>
-        <h1 className="font-headline text-3xl md:text-4xl">
-          {divisionName}
-        </h1>
-        <p className="text-muted-foreground">
-          Dashboard untuk {user.name}.
-        </p>
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="font-headline text-3xl md:text-4xl">
+            {divisionName}
+          </h1>
+          <p className="text-muted-foreground">
+            Dashboard untuk {user.name}.
+          </p>
+        </div>
+        <button onClick={() => setIsFundRequestOpen(true)} className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Ajukan Dana
+        </button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -125,6 +135,12 @@ export function AnggotaDashboard() {
         </div>
       </div>
     </div>
+    <AddFundRequestDialog 
+        isOpen={isFundRequestOpen}
+        setIsOpen={setIsFundRequestOpen}
+        currentUser={user}
+    />
+    </>
   );
 }
 

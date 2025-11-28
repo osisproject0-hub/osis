@@ -7,58 +7,40 @@
       "imageHint": "abstract gradient"
     },
     {
-      "id": "user-rizki",
-      "description": "Profile picture for Rizki Firmanto Putra",
-      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjQyNTExNDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man portrait"
+      "id": "gallery-1",
+      "description": "Upacara Bendera Peringatan HUT RI",
+      "imageUrl": "https://images.unsplash.com/photo-1763656443611-7f91942915aa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxmbGFnJTIwY2VyZW1vbnl8ZW58MHx8fHwxNzY0Mjk2NDYwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "flag ceremony"
     },
     {
-      "id": "user-almira",
-      "description": "Profile picture for Almira Berliana Putri",
-      "imageUrl": "https://images.unsplash.com/photo-1557053910-d9eadeed1c58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDI3NzgyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
+      "id": "gallery-2",
+      "description": "Kegiatan Bakti Sosial di Desa Terdekat",
+      "imageUrl": "https://images.unsplash.com/photo-1761426201502-3aa0a2e5ec46?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxzb2NpYWwlMjBhY3Rpdml0eXxlbnwwfHx8fDE3NjQyOTY0NjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "social activity"
     },
     {
-      "id": "user-sela",
-      "description": "Profile picture for Sela Marisa Prihatini",
-      "imageUrl": "https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDI3NzgyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
+      "id": "gallery-3",
+      "description": "Lomba Cerdas Cermat Antar Kelas",
+      "imageUrl": "https://images.unsplash.com/photo-1759353296514-a656159d708a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3R1ZGVudCUyMGNvbXBldGl0aW9ufGVufDB8fHx8MTc2NDI5NjQ2MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student competition"
     },
     {
-      "id": "user-dini",
-      "description": "Profile picture for Dini Safitrah",
-      "imageUrl": "https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDI3NzgyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
+      "id": "gallery-4",
+      "description": "Pertandingan Final Futsal PORSENI",
+      "imageUrl": "https://images.unsplash.com/photo-1762341581995-6f2324337402?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzcG9ydHMlMjBjb21wZXRpdGlvbnxlbnwwfHx8fDE3NjQyOTY0NjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "sports competition"
     },
     {
-      "id": "user-ines",
-      "description": "Profile picture for Inesitarahmawati",
-      "imageUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDI3NzgyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
+      "id": "gallery-5",
+      "description": "Seminar Teknologi dan Kewirausahaan",
+      "imageUrl": "https://images.unsplash.com/photo-1758413350815-7b06dbbfb9a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8c3R1ZGVudCUyMHNlbWluYXJ8ZW58MHx8fHwxNzY0Mjk2NDYwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "student seminar"
     },
     {
-      "id": "user-tiara",
-      "description": "Profile picture for Tiara Dwi Ramadhani",
-      "imageUrl": "https://images.unsplash.com/photo-1610655507808-a59293f4e332?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDI3NzgyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
-    },
-    {
-      "id": "user-syafiqotuzzahro",
-      "description": "Profile picture for Syafiqotuzzahro",
-      "imageUrl": "https://images.unsplash.com/photo-1609505848912-b7c3b8b4beda?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDI3NzgyNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
-    },
-    {
-      "id": "user-ayyu",
-      "description": "Profile picture for Ayyu'Tiyani Mafaiza",
-      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjQyNzc4MjZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman portrait"
-    },
-    {
-      "id": "user-akbar",
-      "description": "Profile picture for Rizki Akbar",
-      "imageUrl": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjQyNTExNDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man portrait"
+      "id": "gallery-6",
+      "description": "Perayaan Idul Adha dan Qurban di Sekolah",
+      "imageUrl": "https://images.unsplash.com/photo-1761475051281-dc6d94c81f11?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyZWxpZ2lvdXMlMjBldmVudHxlbnwwfHx8fDE3NjQyOTY0NjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "religious event"
     }
   ]
 }
