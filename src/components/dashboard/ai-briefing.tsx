@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { Bot, Sparkles } from 'lucide-react';
-import { generateBriefingAction } from '@/app/actions';
 import { AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,24 +17,41 @@ export function AIBriefing() {
     setIsLoading(true);
     setBriefing(null);
 
-    // Mock data for the AI flow input
     const mockInput: AIBriefingForKetuaInput = {
       pendingApprovals: '3 pengajuan dana (Event 17 Agustus, Lomba Catur, Seminar IT) dan 1 proposal kegiatan (Bakti Sosial).',
       divisionProgress: 'Divisi Olahraga: 80% persiapan Porseni. Divisi Humas: 50% publikasi seminar. Divisi Keagamaan: 90% persiapan Idul Adha.',
       sentimentAnalysis: 'Sentimen netral cenderung positif. Terdapat beberapa keluhan minor mengenai jadwal ekstrakurikuler yang bentrok.',
     };
 
-    const result = await generateBriefingAction(mockInput);
-
-    if (result.success && result.data) {
-      setBriefing(result.data.briefing);
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error Generating Briefing',
-        description: result.error,
+    try {
+      const response = await fetch('/api/generate-briefing', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(mockInput),
       });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        setBriefing(result.data.briefing);
+      } else {
+        throw new Error(result.error || 'Failed to parse briefing from response.');
+      }
+    } catch(error: any) {
+        console.error("Briefing generation failed:", error);
+        toast({
+            variant: 'destructive',
+            title: 'Error Generating Briefing',
+            description: 'Failed to generate briefing.',
+        });
     }
+
     setIsLoading(false);
   };
   
