@@ -8,7 +8,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Briefcase, Users, Bot, Vote } from 'lucide-react';
+import { Briefcase, Bot, Vote } from 'lucide-react';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
@@ -49,7 +49,7 @@ export default function PortalPage() {
   const isLoading = membersLoading || divisionsLoading || programsLoading || galleryLoading || electionLoading;
 
   return (
-    <div className="bg-background">
+    <div className="bg-background animate-in fade-in-50">
        <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
             <div className="container mx-auto flex justify-between items-center">
                  <Link href="/portal" className="flex items-center gap-2">
@@ -58,7 +58,7 @@ export default function PortalPage() {
                 </Link>
                 {election?.isActive && (
                   <Link href="/portal/evoting">
-                      <Button>
+                      <Button className="animate-in fade-in zoom-in-95">
                           <Vote className="mr-2 h-4 w-4" />
                           E-Voting Pemilihan Ketua OSIS
                       </Button>
@@ -80,7 +80,7 @@ export default function PortalPage() {
             />
           )}
           <div className="absolute inset-0 bg-black/50" />
-          <div className="relative z-10 p-4">
+          <div className="relative z-10 p-4 animate-in fade-in slide-in-from-bottom-10 duration-700">
             <h1 className="text-4xl md:text-6xl font-headline font-bold" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
               Selamat Datang di Portal OSIS
             </h1>
@@ -92,21 +92,21 @@ export default function PortalPage() {
 
         {/* Visi Misi Section */}
         <section className="py-12 md:py-20 text-center">
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
                  <h2 className="text-3xl md:text-4xl font-headline font-bold mb-4">
                     Visi & Misi
                 </h2>
                 <p className="text-xl text-primary font-semibold mb-6">"Mewujudkan OSIS sebagai wadah aspirasi siswa yang aktif, kreatif, dan berakhlak mulia."</p>
                 <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                    <Card>
+                    <Card className="hover:shadow-lg transition-shadow">
                         <CardHeader><CardTitle>Aktif</CardTitle></CardHeader>
                         <CardContent><p>Mendorong partisipasi aktif siswa dalam setiap kegiatan sekolah.</p></CardContent>
                     </Card>
-                     <Card>
+                     <Card className="hover:shadow-lg transition-shadow">
                         <CardHeader><CardTitle>Kreatif</CardTitle></CardHeader>
                         <CardContent><p>Menyelenggarakan program dan acara yang inovatif dan inspiratif.</p></CardContent>
                     </Card>
-                     <Card>
+                     <Card className="hover:shadow-lg transition-shadow">
                         <CardHeader><CardTitle>Berakhlak Mulia</CardTitle></CardHeader>
                         <CardContent><p>Menjunjung tinggi nilai-nilai moral dan etika dalam berorganisasi.</p></CardContent>
                     </Card>
@@ -116,7 +116,7 @@ export default function PortalPage() {
 
         {/* Organization Structure Section */}
         <section id="structure" className="py-12 md:py-20 bg-secondary/20">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
             <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
               Struktur Organisasi
             </h2>
@@ -127,16 +127,18 @@ export default function PortalPage() {
                 membersByDivision.map(division => (
                   <div key={division.id}>
                     <h3 className='font-headline text-2xl mb-4 flex items-center gap-2'><Briefcase className="h-6 w-6 text-primary" /> {division.name}</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
                       {division.members.map(member => (
-                        <Link key={member.uid} href={`/profile/${member.uid}`} className="block">
-                            <Card className="h-full hover:shadow-lg hover:border-primary/50 transition-all text-center p-4">
-                                <Avatar className="h-20 w-20 mb-2 mx-auto">
-                                    <AvatarImage src={member.photoURL || ''} alt={member.name}/>
+                        <Link key={member.uid} href={`/profile/${member.uid}`} className="block group">
+                            <Card className="h-full hover:shadow-xl hover:border-primary/50 transition-all text-center p-2 transform hover:-translate-y-1 duration-300">
+                               <CardContent className="p-2">
+                                <Avatar className="h-24 w-24 mb-2 mx-auto border-2 border-muted group-hover:border-primary transition-colors">
+                                    <AvatarImage src={member.photoURL || ''} alt={member.name} className="object-cover"/>
                                     <AvatarFallback>{member.name.split(' ').map(n=>n[0]).join('').substring(0,2)}</AvatarFallback>
                                 </Avatar>
-                                <p className="font-semibold text-sm">{member.name}</p>
-                                <p className="text-xs text-muted-foreground">{member.position}</p>
+                                <p className="font-semibold text-sm leading-tight">{member.name}</p>
+                                <p className="text-xs text-muted-foreground mt-1">{member.position}</p>
+                               </CardContent>
                             </Card>
                         </Link>
                       ))}
@@ -150,7 +152,7 @@ export default function PortalPage() {
 
          {/* Work Program Section */}
         <section id="work-program" className="py-12 md:py-20">
-          <div className="container mx-auto px-4 max-w-4xl">
+          <div className="container mx-auto px-4 max-w-4xl animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
             <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
               Program Kerja Unggulan
             </h2>
@@ -179,7 +181,7 @@ export default function PortalPage() {
 
         {/* Gallery Section */}
         <section id="gallery" className="py-12 md:py-20 bg-secondary/20">
-            <div className="container mx-auto px-4">
+            <div className="container mx-auto px-4 animate-in fade-in-50 slide-in-from-bottom-5 duration-500">
                 <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
                 Galeri Kegiatan
                 </h2>
@@ -197,7 +199,7 @@ export default function PortalPage() {
                         ))
                     ) : (
                         galleryImages?.map(image => (
-                            <Card key={image.id} className='overflow-hidden group'>
+                            <Card key={image.id} className='overflow-hidden group transition-all duration-300 hover:shadow-xl'>
                                 <div className="aspect-video relative">
                                     <Image src={image.imageUrl} alt={image.description} fill className="object-cover transition-transform group-hover:scale-105" data-ai-hint={image.imageHint} />
                                 </div>
@@ -213,7 +215,7 @@ export default function PortalPage() {
       </main>
       <footer className="bg-primary text-primary-foreground py-8">
           <div className="container mx-auto text-center">
-              <p>&copy; 2024 OSIS SMK LPPMRI 2 Kedungreja. All rights reserved.</p>
+              <p>&copy; 2024 OSIS SMAKDA. All rights reserved.</p>
           </div>
       </footer>
     </div>
@@ -223,14 +225,14 @@ export default function PortalPage() {
 const DivisionSkeleton = () => (
     <div>
         <Skeleton className="h-8 w-1/3 mb-4" />
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {Array.from({length: 4}).map((_, i) => (
-                <Card key={i} className='p-4'>
-                    <div className="flex flex-col items-center text-center">
-                        <Skeleton className="h-20 w-20 rounded-full mb-2" />
+                <Card key={i} className='p-2'>
+                    <CardContent className="p-2 flex flex-col items-center text-center">
+                        <Skeleton className="h-24 w-24 rounded-full mb-2" />
                         <Skeleton className="h-5 w-32 mb-1" />
                         <Skeleton className="h-4 w-24" />
-                    </div>
+                    </CardContent>
                 </Card>
             ))}
         </div>

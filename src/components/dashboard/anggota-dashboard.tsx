@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { collection, query, where } from 'firebase/firestore';
 import type { Task, User } from '@/lib/types';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CheckCircle2, ListTodo, Loader, HandCoins, PlusCircle } from 'lucide-react';
+import { CheckCircle2, ListTodo, Loader, HandCoins } from 'lucide-react';
 import { AddFundRequestDialog } from '@/components/add-fund-request-dialog';
 import { Button } from '@/components/ui/button';
 
@@ -118,7 +118,7 @@ export function AnggotaDashboard() {
                  <div key={member.uid} className="flex items-center gap-3">
                     <Avatar>
                         {member.photoURL && <AvatarImage asChild>
-                            <Image src={member.photoURL} alt={member.name} width={40} height={40} />
+                            <Image src={member.photoURL} alt={member.name} width={40} height={40} className="object-cover"/>
                         </AvatarImage>}
                         <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                     </Avatar>

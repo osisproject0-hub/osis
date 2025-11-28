@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TasksTable } from "@/components/tasks-table";
-import { Mail, Briefcase, Users, Bot, LogIn } from "lucide-react";
+import { Mail, Briefcase, Bot } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -34,10 +34,11 @@ export default function UserProfilePage() {
     
     if (!user) {
         return (
-             <div className="container mx-auto p-4 md:p-8 text-center mt-20">
+             <div className="flex flex-col items-center justify-center min-h-screen bg-background text-center p-4">
+                <Bot className="h-16 w-16 text-muted-foreground mb-4"/>
                 <h1 className="text-2xl font-bold">Pengguna tidak ditemukan</h1>
                 <p className="text-muted-foreground">Profil yang Anda cari tidak ada atau telah dihapus.</p>
-                 <Link href="/portal" className="mt-4 inline-block">
+                 <Link href="/portal" className="mt-6">
                     <Button>Kembali ke Portal</Button>
                 </Link>
             </div>
@@ -47,22 +48,25 @@ export default function UserProfilePage() {
     const fallbackInitials = user.name?.split(' ').map((n) => n[0]).join('').substring(0, 2);
 
     return (
-        <>
+        <div className="bg-secondary/20 min-h-screen">
         <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
             <div className="container mx-auto flex justify-between items-center">
                  <Link href="/portal" className="flex items-center gap-2">
                     <Bot className="w-8 h-8 text-primary" />
                     <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
                 </Link>
+                 <Link href="/login" >
+                    <Button variant="outline">Dashboard</Button>
+                </Link>
             </div>
         </header>
         <div className="container mx-auto p-4 md:p-8 mt-8">
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <aside className="md:col-span-1 space-y-6">
-                    <Card className="text-center">
+           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <aside className="lg:col-span-1 space-y-6 animate-in fade-in slide-in-from-left-5 duration-500">
+                    <Card className="text-center shadow-lg">
                         <CardContent className="pt-6">
                              <Avatar className="h-32 w-32 border-4 border-primary/20 mx-auto">
-                                {user.photoURL && <AvatarImage asChild src={user.photoURL}><Image src={user.photoURL} alt={user.name} width={128} height={128} /></AvatarImage>}
+                                {user.photoURL && <AvatarImage asChild src={user.photoURL}><Image src={user.photoURL} alt={user.name} width={128} height={128} className="object-cover"/></AvatarImage>}
                                 <AvatarFallback className="text-5xl">{fallbackInitials}</AvatarFallback>
                             </Avatar>
                             <h1 className="font-headline text-3xl mt-4">{user.name}</h1>
@@ -71,34 +75,34 @@ export default function UserProfilePage() {
                     </Card>
                     <Card>
                         <CardHeader>
-                            <CardTitle>Detail Kontak & Divisi</CardTitle>
+                            <CardTitle>Detail</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-3 text-sm">
-                             <div className="flex items-center gap-3 text-muted-foreground">
-                                <Mail className="h-5 w-5"/> 
-                                <span>{user.email}</span>
+                        <CardContent className="space-y-4 text-sm">
+                             <div className="flex items-center gap-3">
+                                <Mail className="h-5 w-5 text-muted-foreground flex-shrink-0"/> 
+                                <span className="text-muted-foreground truncate">{user.email}</span>
                             </div>
-                             <div className="flex items-center gap-3 text-muted-foreground">
-                                <Briefcase className="h-5 w-5"/> 
-                                <span>{user.divisionName}</span>
+                             <div className="flex items-center gap-3">
+                                <Briefcase className="h-5 w-5 text-muted-foreground flex-shrink-0"/> 
+                                <span className="font-medium">{user.divisionName}</span>
                             </div>
                         </CardContent>
                     </Card>
                 </aside>
-                <main className="md:col-span-2">
+                <main className="lg:col-span-2 animate-in fade-in slide-in-from-bottom-5 duration-500">
                     <TasksTable tasks={tasks || []} isLoading={isTasksLoading} title="Tugas Aktif"/>
                 </main>
            </div>
         </div>
-        </>
+        </div>
     )
 }
 
 function ProfileSkeleton() {
     return (
-        <div className="container mx-auto p-4 md:p-8 mt-20">
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                 <aside className="md:col-span-1 space-y-6">
+        <div className="container mx-auto p-4 md:p-8 mt-8">
+             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                 <aside className="lg:col-span-1 space-y-6">
                      <Card>
                         <CardContent className="pt-6 flex flex-col items-center">
                             <Skeleton className="h-32 w-32 rounded-full" />
@@ -116,7 +120,7 @@ function ProfileSkeleton() {
                         </CardContent>
                     </Card>
                  </aside>
-                <main className="md:col-span-2">
+                <main className="lg:col-span-2">
                     <Card>
                         <CardHeader><Skeleton className="h-8 w-48" /></CardHeader>
                         <CardContent>
