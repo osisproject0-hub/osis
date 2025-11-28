@@ -37,7 +37,7 @@ export function AnggotaDashboard() {
   }, [myTasks]);
 
 
-  if (isUserLoading || !user) {
+  if (isUserLoading || !user || !user.position) {
     return <DashboardSkeleton />;
   }
 
