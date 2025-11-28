@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser, useCollection, useFirestore } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import * as React from 'react';
 import { collection, query, where } from 'firebase/firestore';
 import type { Task, User as UserType } from '@/lib/types';
@@ -8,19 +8,24 @@ import { TasksTable } from '@/components/tasks-table';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { AddTaskDialog } from '@/components/add-task-dialog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function WakilDashboard() {
   const { user } = useUser();
   const firestore = useFirestore();
   
-  const myTasksQuery = user ? query(collection(firestore!, 'tasks'), where('assignedToUID', '==', user.uid)) : null;
-  const { data: myTasks, loading: myTasksLoading } = useCollection<Task>(myTasksQuery);
+  const myTasksQuery = useMemoFirebase(() => 
+    user ? query(collection(firestore, 'tasks'), where('assignedToUID', '==', user.uid)) : null
+  , [firestore, user]);
+  const { data: myTasks, isLoading: myTasksLoading } = useCollection<Task>(myTasksQuery);
 
-  const allOngoingTasksQuery = firestore ? query(collection(firestore, 'tasks'), where('status', '!=', 'completed')) : null;
-  const { data: allOngoingTasks, loading: allTasksLoading } = useCollection<Task>(allOngoingTasksQuery);
+  const allOngoingTasksQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'tasks'), where('status', '!=', 'completed')) : null
+  , [firestore]);
+  const { data: allOngoingTasks, isLoading: allTasksLoading } = useCollection<Task>(allOngoingTasksQuery);
 
-  const usersQuery = firestore ? query(collection(firestore, 'users')) : null;
+  const usersQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'users')) : null
+  , [firestore]);
   const { data: allUsers } = useCollection<UserType>(usersQuery);
 
   const [isAddTaskOpen, setIsAddTaskOpen] = React.useState(false);

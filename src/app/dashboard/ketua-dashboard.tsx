@@ -2,7 +2,7 @@
 
 import { FileCheck, Users, Wallet, BarChart, PlusCircle } from 'lucide-react';
 import * as React from 'react';
-import { useUser, useCollection, useFirestore } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AIBriefing } from '@/components/dashboard/ai-briefing';
@@ -14,9 +14,15 @@ import { Button } from '@/components/ui/button';
 export function KetuaDashboard() {
   const { user } = useUser();
   const firestore = useFirestore();
-  const myTasksQuery = user ? query(collection(firestore!, 'tasks'), where('assignedToUID', '==', user.uid)) : null;
-  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(myTasksQuery);
-  const usersQuery = firestore ? query(collection(firestore, 'users')) : null;
+  
+  const myTasksQuery = useMemoFirebase(() => 
+    user ? query(collection(firestore, 'tasks'), where('assignedToUID', '==', user.uid)) : null
+  , [firestore, user]);
+  const { data: myTasks, isLoading: tasksLoading } = useCollection<Task>(myTasksQuery);
+
+  const usersQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'users')) : null
+  , [firestore]);
   const { data: allUsers } = useCollection<UserType>(usersQuery);
 
   const [isAddTaskOpen, setIsAddTaskOpen] = React.useState(false);

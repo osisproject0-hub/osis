@@ -1,6 +1,7 @@
 'use client';
 
-import { useCollection, useUser, useFirestore } from '@/firebase';
+import * as React from 'react';
+import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { TasksTable } from '@/components/tasks-table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -14,11 +15,15 @@ export function AnggotaDashboard() {
   const { user, isLoading: isUserLoading } = useUser();
   const firestore = useFirestore();
 
-  const myTasksQuery = user ? query(collection(firestore!, 'tasks'), where('assignedToUID', '==', user.uid)) : null;
-  const { data: myTasks, loading: tasksLoading } = useCollection<Task>(myTasksQuery);
+  const myTasksQuery = useMemoFirebase(() =>
+    user ? query(collection(firestore, 'tasks'), where('assignedToUID', '==', user.uid)) : null
+  , [firestore, user]);
+  const { data: myTasks, isLoading: tasksLoading } = useCollection<Task>(myTasksQuery);
   
-  const divisionMembersQuery = user && user.divisionId ? query(collection(firestore!, 'users'), where('divisionId', '==', user.divisionId)) : null;
-  const { data: divisionMembers, loading: membersLoading } = useCollection<User>(divisionMembersQuery);
+  const divisionMembersQuery = useMemoFirebase(() =>
+    user && user.divisionId ? query(collection(firestore, 'users'), where('divisionId', '==', user.divisionId)) : null
+  , [firestore, user]);
+  const { data: divisionMembers, isLoading: membersLoading } = useCollection<User>(divisionMembersQuery);
 
   const otherDivisionMembers = divisionMembers?.filter(member => member.uid !== user?.uid);
   

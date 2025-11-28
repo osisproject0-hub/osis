@@ -1,6 +1,6 @@
 'use client';
 
-import { useCollection, useUser } from '@/firebase';
+import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -13,17 +13,20 @@ import {
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ShieldAlert, Users } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { User as UserType } from '@/lib/types';
-import { useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 
 export default function MembersPage() {
   const { user: currentUser } = useUser();
   const firestore = useFirestore();
-  const membersQuery = firestore ? query(collection(firestore, 'users')) : null;
-  const { data: members, loading } = useCollection<UserType>(membersQuery);
+
+  const membersQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'users')) : null
+  , [firestore]);
+  
+  const { data: members, isLoading } = useCollection<UserType>(membersQuery);
 
   if (!currentUser || currentUser.accessLevel < 9) {
     return (
@@ -48,7 +51,7 @@ export default function MembersPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? (
+          {isLoading ? (
             <div className="space-y-2">
               <Skeleton className="h-12 w-full" />
               <Skeleton className="h-12 w-full" />
@@ -101,5 +104,3 @@ export default function MembersPage() {
     </div>
   );
 }
-
-    

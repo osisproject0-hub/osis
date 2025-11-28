@@ -31,7 +31,6 @@ export default function LoginPage() {
   const auth = useAuth();
   const { user, isLoading: isUserLoading } = useUser();
   const { toast } = useToast();
-  const [isFirebaseReady, setIsFirebaseReady] = React.useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -42,12 +41,6 @@ export default function LoginPage() {
   });
 
   const isSubmitting = form.formState.isSubmitting;
-
-  React.useEffect(() => {
-    if (auth) {
-      setIsFirebaseReady(true);
-    }
-  }, [auth]);
 
   const handleLogin = async (data: LoginFormValues) => {
     if (!auth) {
@@ -70,8 +63,6 @@ export default function LoginPage() {
       let description = 'Terjadi kesalahan saat mencoba masuk.';
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
         description = 'Email atau kata sandi yang Anda masukkan salah.';
-      } else if (error.code === 'auth/configuration-not-found') {
-        description = 'Konfigurasi Firebase tidak ditemukan. Silakan refresh dan coba lagi.';
       }
       toast({
         variant: 'destructive',
@@ -89,7 +80,7 @@ export default function LoginPage() {
 
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
   
-  const isLoading = isSubmitting || isUserLoading;
+  const isLoading = isSubmitting || isUserLoading || !auth;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
@@ -114,7 +105,7 @@ export default function LoginPage() {
             <CardDescription className="pt-2">Digital Command Center</CardDescription>
           </CardHeader>
           
-          {!isFirebaseReady ? (
+          {!auth ? (
             <CardContent className="flex flex-col items-center justify-center space-y-4 h-64">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-muted-foreground">Menginisialisasi...</p>

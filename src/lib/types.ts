@@ -44,6 +44,7 @@ export interface Task {
   description: string;
   assignedToUID: string;
   assignedToName: string;
+  assignedByUID: string;
   assignedByName: string;
   divisionId?: string;
   dueDate: Timestamp | string; // Can be a string when creating, but is a Timestamp from Firestore

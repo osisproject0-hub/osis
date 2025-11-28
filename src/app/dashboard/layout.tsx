@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import { useUser } from '@/firebase';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
@@ -20,7 +20,7 @@ export default function DashboardLayout({
   useEffect(() => {
     // Redirect if loading is finished and there's no authenticated user
     if (!isLoading && !authUser) {
-      redirect('/login');
+      router.push('/login');
     }
   }, [authUser, isLoading, router]);
 

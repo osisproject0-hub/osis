@@ -1,5 +1,5 @@
 'use client';
-import { useUser, useCollection, useFirestore } from '@/firebase';
+import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where, doc, updateDoc } from 'firebase/firestore';
 import type { FundRequest } from '@/lib/types';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { formatDistanceToNow } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { Timestamp } from 'firebase/firestore';
+import { updateDocumentNonBlocking } from '@/firebase';
 
 
 export default function ApprovalsPage() {
@@ -20,8 +21,11 @@ export default function ApprovalsPage() {
     const firestore = useFirestore();
     const { toast } = useToast();
 
-    const pendingRequestsQuery = firestore ? query(collection(firestore, 'fundRequests'), where('status', '==', 'Pending')) : null;
-    const { data: pendingRequests, loading, error } = useCollection<FundRequest>(pendingRequestsQuery);
+    const pendingRequestsQuery = useMemoFirebase(() =>
+        firestore ? query(collection(firestore, 'fundRequests'), where('status', '==', 'Pending')) : null
+    , [firestore]);
+
+    const { data: pendingRequests, isLoading, error } = useCollection<FundRequest>(pendingRequestsQuery);
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
@@ -37,7 +41,7 @@ export default function ApprovalsPage() {
         if (!firestore) return;
         const requestRef = doc(firestore, 'fundRequests', requestId);
         try {
-            await updateDoc(requestRef, { status: newStatus });
+            updateDocumentNonBlocking(requestRef, { status: newStatus });
             toast({
                 title: 'Success',
                 description: `Permintaan dana telah ${newStatus === 'Approved' ? 'disetujui' : 'ditolak'}.`,
@@ -91,7 +95,7 @@ export default function ApprovalsPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {loading ? (
+                            {isLoading ? (
                                 <>
                                     <TableRow><TableCell colSpan={6}><Skeleton className="h-10 w-full"/></TableCell></TableRow>
                                     <TableRow><TableCell colSpan={6}><Skeleton className="h-10 w-full"/></TableCell></TableRow>

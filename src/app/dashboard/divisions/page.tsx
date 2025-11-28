@@ -1,12 +1,11 @@
 'use client';
 
-import { useCollection, useUser } from '@/firebase';
+import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert, Users, Briefcase } from 'lucide-react';
 import type { User as UserType } from '@/lib/types';
-import { useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 
 const divisions = [
@@ -24,8 +23,12 @@ const divisions = [
 export default function DivisionsPage() {
   const { user: currentUser } = useUser();
   const firestore = useFirestore();
-  const membersQuery = firestore ? query(collection(firestore, 'users')) : null;
-  const { data: members, loading } = useCollection<UserType>(membersQuery);
+  
+  const membersQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'users')) : null
+  , [firestore]);
+  
+  const { data: members, isLoading } = useCollection<UserType>(membersQuery);
 
   if (!currentUser || currentUser.accessLevel < 7) {
     return (
@@ -63,7 +66,7 @@ export default function DivisionsPage() {
               <CardContent>
                 <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="h-4 w-4 mr-2" />
-                    {loading ? <Skeleton className="h-4 w-20" /> : `${divisionMembers.length} Anggota`}
+                    {isLoading ? <Skeleton className="h-4 w-20" /> : `${divisionMembers.length} Anggota`}
                 </div>
               </CardContent>
             </Card>

@@ -1,7 +1,7 @@
 'use client';
 
 import { DollarSign, PlusCircle } from 'lucide-react';
-import { useCollection } from '@/firebase';
+import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import type { FinancialReport, FundRequest } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,7 +17,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { collection, query } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 
 const statusVariant: { [key: string]: 'default' | 'secondary' | 'destructive' } = {
   Approved: 'default',
@@ -27,11 +26,17 @@ const statusVariant: { [key: string]: 'default' | 'secondary' | 'destructive' } 
 
 export default function FinancePage() {
   const firestore = useFirestore();
-  const fundRequestsQuery = firestore ? query(collection(firestore, 'fundRequests')) : null;
-  const financialReportsQuery = firestore ? query(collection(firestore, 'financialReports')) : null;
 
-  const { data: fundRequests, loading: requestsLoading } = useCollection<FundRequest>(fundRequestsQuery);
-  const { data: financialReports, loading: reportsLoading } = useCollection<FinancialReport>(financialReportsQuery);
+  const fundRequestsQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'fundRequests')) : null
+  , [firestore]);
+  
+  const financialReportsQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'financialReports')) : null
+  , [firestore]);
+
+  const { data: fundRequests, isLoading: requestsLoading } = useCollection<FundRequest>(fundRequestsQuery);
+  const { data: financialReports, isLoading: reportsLoading } = useCollection<FinancialReport>(financialReportsQuery);
   
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
@@ -140,5 +145,3 @@ export default function FinancePage() {
     </div>
   );
 }
-
-    

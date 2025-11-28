@@ -40,6 +40,7 @@ import {
 } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { addDocumentNonBlocking } from '@/firebase';
 
 const taskSchema = z.object({
   title: z.string().min(3, 'Judul minimal 3 karakter.'),
@@ -89,12 +90,14 @@ export function AddTaskDialog({
       const assignedToUser = allUsers.find(u => u.uid === data.assignedToUID);
       if (!assignedToUser) throw new Error("Pengguna yang ditugaskan tidak ditemukan.");
 
-      await addDoc(collection(firestore, 'tasks'), {
+      const tasksCollection = collection(firestore, 'tasks');
+      addDocumentNonBlocking(tasksCollection, {
         title: data.title,
         description: data.description || '',
         assignedToUID: data.assignedToUID,
         assignedToName: assignedToUser.name,
         assignedByName: currentUser.name,
+        assignedByUID: currentUser.uid,
         divisionId: assignedToUser.divisionId || '',
         dueDate: Timestamp.fromDate(data.dueDate),
         priority: data.priority,
@@ -236,7 +239,7 @@ export function AddTaskDialog({
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date) => date < new Date() || date < new Date('1900-01-01')}
+                            disabled={(date) => date < new Date('1900-01-01')}
                             initialFocus
                         />
                         </PopoverContent>

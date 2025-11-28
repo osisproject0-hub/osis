@@ -35,7 +35,6 @@ export default function RegisterPage() {
   const firestore = useFirestore();
   const { user, isLoading: isUserLoading } = useUser();
   const { toast } = useToast();
-  const [isFirebaseReady, setIsFirebaseReady] = React.useState(false);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -47,12 +46,6 @@ export default function RegisterPage() {
   });
 
   const isSubmitting = form.formState.isSubmitting;
-
-  React.useEffect(() => {
-    if (auth && firestore) {
-      setIsFirebaseReady(true);
-    }
-  }, [auth, firestore]);
 
   const handleRegister = async (data: RegisterFormValues) => {
     if (!auth || !firestore) {
@@ -113,8 +106,6 @@ export default function RegisterPage() {
       let description = 'Terjadi kesalahan saat mendaftar.';
       if (error.code === 'auth/email-already-in-use') {
         description = 'Alamat email ini sudah terdaftar. Silakan coba masuk.';
-      } else if (error.code === 'auth/configuration-not-found') {
-        description = 'Konfigurasi Firebase tidak ditemukan. Silakan refresh dan coba lagi.';
       }
       console.error("Registration Error: ", error);
       toast({
@@ -133,7 +124,7 @@ export default function RegisterPage() {
 
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
   
-  const isLoading = isSubmitting || isUserLoading;
+  const isLoading = isSubmitting || isUserLoading || !auth || !firestore;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center">
@@ -157,7 +148,7 @@ export default function RegisterPage() {
             <CardTitle className="font-headline text-4xl">Buat Akun</CardTitle>
             <CardDescription className="pt-2">Daftar untuk mengakses Nusantara OSIS Hub</CardDescription>
           </CardHeader>
-          {!isFirebaseReady ? (
+          {!auth || !firestore ? (
             <CardContent className="flex flex-col items-center justify-center space-y-4 h-72">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
               <p className="text-muted-foreground">Menginisialisasi...</p>
