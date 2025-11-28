@@ -1,3 +1,4 @@
+import 'genkit/patch/init';
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
 
