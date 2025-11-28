@@ -127,7 +127,7 @@ export default function RegisterPage() {
 
   const bgImage = PlaceHolderImages.find(img => img.id === 'login-background');
   
-  const isLoading = isRegistering || isUserLoading;
+  const isLoading = isRegistering || isUserLoading || !firebaseReady;
   
   const getButtonContent = () => {
     if (!firebaseReady) {
@@ -214,7 +214,7 @@ export default function RegisterPage() {
                     </FormItem>
                   )}
                 />
-                 <Button type="submit" disabled={isLoading || !firebaseReady} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
+                 <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
                    {getButtonContent()}
                 </Button>
               </CardContent>
