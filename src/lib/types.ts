@@ -75,7 +75,23 @@ export interface FinancialReport {
 }
 
 export interface Division {
-  id?: string;
+  id: string;
   name: string;
   description: string;
+  order: number;
+}
+
+export interface WorkProgram {
+  id: string;
+  division: string;
+  programs: string[];
+  order: number;
+}
+
+export interface GalleryImage {
+    id: string;
+    description: string;
+    imageUrl: string;
+    imageHint: string;
+    order: number;
 }

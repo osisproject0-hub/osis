@@ -30,8 +30,20 @@ service cloud.firestore {
 
     // Rules for 'divisions' collection
     match /divisions/{divisionId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow write: if isAdmin(); 
+    }
+    
+    // Rules for 'workPrograms' collection
+    match /workPrograms/{programId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Rules for 'galleryImages' collection
+    match /galleryImages/{imageId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     // Rules for 'fundRequests' collection

@@ -3,56 +3,14 @@
 import Image from 'next/image';
 import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
-import type { User } from '@/lib/types';
+import type { User, Division, WorkProgram, GalleryImage } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Briefcase, Users, Bot, LogIn } from 'lucide-react';
+import { Briefcase, Users, Bot } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-
-// Pre-defined division order
-const divisionOrder = [
-  'Pengurus Inti',
-  'Divisi Keimanan & Ketaqwaan',
-  'Divisi Organisasi & Arganisasi',
-  'Divisi Kehidupan Berbangsa & Bernegara',
-  'Divisi Dokumentasi & Kesenian',
-  'Divisi Olahraga',
-  'Divisi Hubungan Masyarakat',
-  'Divisi Teknologi & Komunikasi',
-  'Divisi Keamanan & Ketertiban',
-  'Divisi Kesehatan',
-];
-
-const workPrograms = [
-    {
-        division: "Umum",
-        programs: ["Rapat Pleno", "Latihan Dasar Kepemimpinan (LDK)", "Penerimaan Anggota Baru"]
-    },
-    {
-        division: "Divisi Keimanan & Ketaqwaan",
-        programs: ["Peringatan Hari Besar Islam (PHBI)", "Pesantren Kilat", "Kultum Jumat"]
-    },
-    {
-        division: "Divisi Kehidupan Berbangsa & Bernegara",
-        programs: ["Upacara Bendera Setiap Hari Senin", "Peringatan Hari Kemerdekaan RI", "Bakti Sosial"]
-    },
-    {
-        division: "Divisi Dokumentasi & Kesenian",
-        programs: ["Pentas Seni (PENSI) Tahunan", "Lomba Fotografi & Videografi", "Mading Sekolah"]
-    },
-    {
-        division: "Divisi Olahraga",
-        programs: ["Pekan Olahraga Antar Kelas (PORKELAS)", "Classmeeting", "Latihan Rutin Ekskul Olahraga"]
-    },
-    {
-        division: "Divisi Teknologi & Komunikasi",
-        programs: ["Pengelolaan Media Sosial OSIS", "Seminar IT & Workshop Digital", "Liputan Event Sekolah"]
-    }
-]
 
 export default function PortalPage() {
   const firestore = useFirestore();
@@ -61,13 +19,30 @@ export default function PortalPage() {
   const usersQuery = useMemoFirebase(() => 
     firestore ? query(collection(firestore, 'users'), orderBy('accessLevel', 'desc')) : null
   , [firestore]);
+  const { data: members, isLoading: membersLoading } = useCollection<User>(usersQuery);
 
-  const { data: members, isLoading } = useCollection<User>(usersQuery);
+  const divisionsQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'divisions'), orderBy('order', 'asc')) : null
+  , [firestore]);
+  const { data: divisions, isLoading: divisionsLoading } = useCollection<Division>(divisionsQuery);
+  
+  const workProgramsQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'workPrograms'), orderBy('order', 'asc')) : null
+  , [firestore]);
+  const { data: workPrograms, isLoading: programsLoading } = useCollection<WorkProgram>(workProgramsQuery);
 
-  const membersByDivision = divisionOrder.map(divisionName => ({
-      name: divisionName,
-      members: members?.filter(m => m.divisionName === divisionName) || []
+  const galleryQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'galleryImages'), orderBy('order', 'asc')) : null
+  , [firestore]);
+  const { data: galleryImages, isLoading: galleryLoading } = useCollection<GalleryImage>(galleryQuery);
+
+
+  const membersByDivision = (divisions || []).map(division => ({
+      ...division,
+      members: members?.filter(m => m.divisionId === division.id) || []
   })).filter(d => d.members.length > 0);
+
+  const isLoading = membersLoading || divisionsLoading || programsLoading || galleryLoading;
 
   return (
     <div className="bg-background">
@@ -138,7 +113,7 @@ export default function PortalPage() {
                 Array.from({ length: 4 }).map((_, i) => <DivisionSkeleton key={i} />)
               ) : (
                 membersByDivision.map(division => (
-                  <div key={division.name}>
+                  <div key={division.id}>
                     <h3 className='font-headline text-2xl mb-4 flex items-center gap-2'><Briefcase className="h-6 w-6 text-primary" /> {division.name}</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                       {division.members.map(member => (
@@ -167,18 +142,26 @@ export default function PortalPage() {
             <h2 className="text-3xl md:text-4xl font-headline text-center font-bold mb-8">
               Program Kerja Unggulan
             </h2>
-            <Accordion type="single" collapsible className="w-full">
-              {workPrograms.map(item => (
-                <AccordionItem value={item.division} key={item.division}>
-                    <AccordionTrigger className='text-lg font-semibold'>{item.division}</AccordionTrigger>
-                    <AccordionContent>
-                        <ul className='list-disc pl-5 space-y-2'>
-                            {item.programs.map(prog => <li key={prog}>{prog}</li>)}
-                        </ul>
-                    </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            {isLoading ? (
+                <div className='space-y-2'>
+                    <Skeleton className='h-12 w-full' />
+                    <Skeleton className='h-12 w-full' />
+                    <Skeleton className='h-12 w-full' />
+                </div>
+            ) : (
+                <Accordion type="single" collapsible className="w-full">
+                {workPrograms?.map(item => (
+                    <AccordionItem value={item.id} key={item.id}>
+                        <AccordionTrigger className='text-lg font-semibold'>{item.division}</AccordionTrigger>
+                        <AccordionContent>
+                            <ul className='list-disc pl-5 space-y-2'>
+                                {item.programs.map(prog => <li key={prog}>{prog}</li>)}
+                            </ul>
+                        </AccordionContent>
+                    </AccordionItem>
+                ))}
+                </Accordion>
+            )}
           </div>
         </section>
 
@@ -189,16 +172,29 @@ export default function PortalPage() {
                 Galeri Kegiatan
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {PlaceHolderImages.filter(p => p.id.startsWith('gallery-')).map(image => (
-                        <Card key={image.id} className='overflow-hidden group'>
+                    {isLoading ? (
+                        Array.from({length: 6}).map((_, i) => (
+                           <Card key={i} className='overflow-hidden group'>
                              <div className="aspect-video relative">
-                                <Image src={image.imageUrl} alt={image.description} fill className="object-cover transition-transform group-hover:scale-105" data-ai-hint={image.imageHint} />
+                                <Skeleton className='h-full w-full' />
                              </div>
-                             <CardContent className='p-4'>
-                                 <p className='font-semibold'>{image.description}</p>
+                             <CardContent className='p-4 space-y-2'>
+                                 <Skeleton className='h-5 w-3/4' />
                              </CardContent>
                         </Card>
-                    ))}
+                        ))
+                    ) : (
+                        galleryImages?.map(image => (
+                            <Card key={image.id} className='overflow-hidden group'>
+                                <div className="aspect-video relative">
+                                    <Image src={image.imageUrl} alt={image.description} fill className="object-cover transition-transform group-hover:scale-105" data-ai-hint={image.imageHint} />
+                                </div>
+                                <CardContent className='p-4'>
+                                    <p className='font-semibold'>{image.description}</p>
+                                </CardContent>
+                            </Card>
+                        ))
+                    )}
                 </div>
             </div>
         </section>
@@ -228,5 +224,3 @@ const DivisionSkeleton = () => (
         </div>
     </div>
 )
-
-    

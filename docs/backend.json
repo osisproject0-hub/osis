@@ -139,9 +139,38 @@
         "description": {
           "type": "string",
           "description": "Description of the division's responsibilities and activities."
+        },
+        "order": {
+            "type": "number",
+            "description": "A number to sort the divisions in the UI."
         }
       },
-      "required": ["id", "name", "description"]
+      "required": ["id", "name", "description", "order"]
+    },
+    "WorkProgram": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WorkProgram",
+      "type": "object",
+      "description": "Represents a work program for a division.",
+      "properties": {
+        "division": { "type": "string" },
+        "programs": { "type": "array", "items": { "type": "string" } },
+        "order": { "type": "number" }
+      },
+      "required": ["division", "programs", "order"]
+    },
+    "GalleryImage": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "GalleryImage",
+        "type": "object",
+        "description": "Represents an image in the public gallery.",
+        "properties": {
+            "description": { "type": "string" },
+            "imageUrl": { "type": "string", "format": "uri" },
+            "imageHint": { "type": "string" },
+            "order": { "type": "number" }
+        },
+        "required": ["description", "imageUrl", "order"]
     },
     "FundRequest": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -188,6 +217,14 @@
     "/divisions/{divisionId}": {
       "schema": { "$ref": "#/entities/Division" },
       "description": "Stores division information."
+    },
+    "/workPrograms/{programId}": {
+        "schema": { "$ref": "#/entities/WorkProgram" },
+        "description": "Stores work programs for divisions."
+    },
+    "/galleryImages/{imageId}": {
+        "schema": { "$ref": "#/entities/GalleryImage" },
+        "description": "Stores images for the public gallery."
     },
     "/fundRequests/{requestId}": {
       "schema": { "$ref": "#/entities/FundRequest" },
