@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
-import { useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
@@ -31,17 +31,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { mockUsers } from '@/lib/mock-data'; // Using mock data for positions
-import { doc, setDoc } from 'firebase/firestore';
-
-
-// In a real app, this should come from Firestore, but for simplicity we use the mock data structure
-const positions = [...new Map(mockUsers.map(item => [item.position, item])).values()];
+import type { Division } from '@/lib/types';
 
 const userSchema = z.object({
   name: z.string().min(3, 'Nama minimal 3 karakter.'),
   email: z.string().email('Format email tidak valid.'),
-  position: z.string({ required_error: 'Pilih posisi untuk anggota.'}),
+  position: z.string({ required_error: 'Pilih posisi untuk anggota.' }),
+  accessLevel: z.coerce.number().min(0).max(10),
+  divisionId: z.string(),
+  divisionName: z.string(),
 });
 
 type UserFormValues = z.infer<typeof userSchema>;
@@ -49,73 +47,64 @@ type UserFormValues = z.infer<typeof userSchema>;
 interface AddUserDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  divisions: Division[];
 }
 
 export function AddUserDialog({
   isOpen,
   setIsOpen,
+  divisions,
 }: AddUserDialogProps) {
-  const firestore = useFirestore();
   const { toast } = useToast();
+  
+  const allPositions = React.useMemo(() => {
+    const corePositions = [
+        { position: 'Ketua OSIS', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 10 },
+        { position: 'Wakil Ketua OSIS', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 9 },
+        { position: 'Sekretaris 1', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 8 },
+        { position: 'Sekretaris 2', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 8 },
+        { position: 'Bendahara 1', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 8 },
+        { position: 'Bendahara 2', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 8 },
+    ];
+
+    const divisionPositions = divisions.flatMap(div => [
+        { position: `Ketua ${div.name}`, divisionName: div.name, divisionId: div.id, accessLevel: 7 },
+        { position: `Anggota ${div.name}`, divisionName: div.name, divisionId: div.id, accessLevel: 5 },
+    ]);
+
+    return [...corePositions, ...divisionPositions];
+  }, [divisions]);
+
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
   });
+  
+  const { watch, setValue } = form;
+  const selectedPositionName = watch('position');
+
+  React.useEffect(() => {
+    const selectedPositionData = allPositions.find(p => p.position === selectedPositionName);
+    if (selectedPositionData) {
+      setValue('accessLevel', selectedPositionData.accessLevel);
+      setValue('divisionId', selectedPositionData.divisionId);
+      setValue('divisionName', selectedPositionData.divisionName);
+    }
+  }, [selectedPositionName, allPositions, setValue]);
+
 
   const isSubmitting = form.formState.isSubmitting;
 
   const onSubmit = async (data: UserFormValues) => {
-    if (!firestore) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Firestore tidak tersedia.' });
-      return;
-    }
-
-    // A real implementation would call a Cloud Function to create the user in Firebase Auth
+    // In a real app, this should call a Cloud Function to create the user in Firebase Auth
     // and then create the user document in Firestore.
     // For this example, we'll just show a success toast and log the data.
-    // We cannot create a user with a password from the client side without authenticating as them.
     
     console.log("Simulating user creation with data:", data);
 
-    const selectedPosition = positions.find(p => p.position === data.position);
-    if (!selectedPosition) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Posisi tidak valid.' });
-        return;
-    }
-
     toast({
         title: 'Simulasi Berhasil',
-        description: `Pengguna ${data.name} akan dibuat dengan email ${data.email}. Karena keterbatasan sisi klien, akun autentikasi harus dibuat secara manual. Dokumen Firestore tidak akan dibuat.`,
+        description: `Pengguna ${data.name} akan dibuat. Akun otentikasi harus dibuat secara manual karena keterbatasan sisi klien.`,
     });
-
-    // In a real scenario with a backend function, you would do something like this:
-    /*
-    try {
-        const userDocRef = doc(firestore, 'users', newUserIdFromBackend);
-        await setDoc(userDocRef, {
-            uid: newUserIdFromBackend,
-            name: data.name,
-            email: data.email,
-            position: selectedPosition.position,
-            divisionId: selectedPosition.divisionId,
-            divisionName: selectedPosition.divisionName,
-            accessLevel: selectedPosition.accessLevel,
-            photoURL: null,
-        });
-        toast({
-            title: 'Anggota Berhasil Ditambahkan',
-            description: `${data.name} telah ditambahkan ke sistem.`,
-        });
-        form.reset();
-        setIsOpen(false);
-    } catch (error) {
-        console.error("Error creating user document: ", error);
-        toast({
-            variant: 'destructive',
-            title: 'Gagal Membuat Dokumen',
-            description: 'Gagal menyimpan data anggota ke Firestore.'
-        });
-    }
-    */
    
     setIsOpen(false);
     form.reset();
@@ -127,7 +116,7 @@ export function AddUserDialog({
         <DialogHeader>
           <DialogTitle>Tambah Anggota Baru</DialogTitle>
           <DialogDescription>
-            Isi detail anggota untuk membuat akun baru. Kata sandi awal akan dikirim ke email mereka.
+            Isi detail anggota untuk membuat akun baru. Kata sandi awal harus dikomunikasikan secara terpisah.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -171,7 +160,7 @@ export function AddUserDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {positions.map(p => (
+                      {allPositions.map(p => (
                         <SelectItem key={p.position} value={p.position}>
                           {p.position}
                         </SelectItem>

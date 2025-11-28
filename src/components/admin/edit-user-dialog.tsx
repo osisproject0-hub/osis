@@ -31,18 +31,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { mockUsers } from '@/lib/mock-data';
-import type { User } from '@/lib/types';
+import type { User, Division } from '@/lib/types';
 import { doc } from 'firebase/firestore';
 
-
-const positions = [...new Map(mockUsers.map(item => [item.position, item])).values()];
 
 const userSchema = z.object({
   name: z.string().min(3, 'Nama minimal 3 karakter.'),
   email: z.string().email('Format email tidak valid.').optional(),
   position: z.string({ required_error: 'Pilih posisi untuk anggota.'}),
   accessLevel: z.coerce.number().min(0).max(10),
+  divisionId: z.string(),
+  divisionName: z.string(),
 });
 
 type UserFormValues = z.infer<typeof userSchema>;
@@ -51,15 +50,36 @@ interface EditUserDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   user: User;
+  divisions: Division[];
 }
 
 export function EditUserDialog({
   isOpen,
   setIsOpen,
-  user
+  user,
+  divisions
 }: EditUserDialogProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
+
+  const allPositions = React.useMemo(() => {
+    const corePositions = [
+        { position: 'Ketua OSIS', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 10 },
+        { position: 'Wakil Ketua OSIS', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 9 },
+        { position: 'Sekretaris 1', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 8 },
+        { position: 'Sekretaris 2', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 8 },
+        { position: 'Bendahara 1', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 8 },
+        { position: 'Bendahara 2', divisionName: 'Pengurus Inti', divisionId: 'inti', accessLevel: 8 },
+    ];
+
+    const divisionPositions = divisions.flatMap(div => [
+        { position: `Ketua ${div.name}`, divisionName: div.name, divisionId: div.id, accessLevel: 7 },
+        { position: `Anggota ${div.name}`, divisionName: div.name, divisionId: div.id, accessLevel: 5 },
+    ]);
+
+    return [...corePositions, ...divisionPositions];
+  }, [divisions]);
+
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
     values: {
@@ -67,8 +87,23 @@ export function EditUserDialog({
       email: user.email || '',
       position: user.position,
       accessLevel: user.accessLevel,
+      divisionId: user.divisionId || '',
+      divisionName: user.divisionName
     }
   });
+
+  const { watch, setValue } = form;
+  const selectedPositionName = watch('position');
+
+  React.useEffect(() => {
+    const selectedPositionData = allPositions.find(p => p.position === selectedPositionName);
+    if (selectedPositionData) {
+      setValue('accessLevel', selectedPositionData.accessLevel);
+      setValue('divisionId', selectedPositionData.divisionId);
+      setValue('divisionName', selectedPositionData.divisionName);
+    }
+  }, [selectedPositionName, allPositions, setValue]);
+
 
   const isSubmitting = form.formState.isSubmitting;
 
@@ -78,19 +113,13 @@ export function EditUserDialog({
       return;
     }
 
-    const selectedPositionData = positions.find(p => p.position === data.position);
-    if (!selectedPositionData) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Posisi yang dipilih tidak valid.' });
-        return;
-    }
-
     const userRef = doc(firestore, 'users', user.id);
     updateDocumentNonBlocking(userRef, {
         name: data.name,
         position: data.position,
         accessLevel: data.accessLevel,
-        divisionId: selectedPositionData.divisionId,
-        divisionName: selectedPositionData.divisionName,
+        divisionId: data.divisionId,
+        divisionName: data.divisionName,
     });
     
     toast({
@@ -150,7 +179,7 @@ export function EditUserDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {positions.map(p => (
+                      {allPositions.map(p => (
                         <SelectItem key={p.position} value={p.position}>
                           {p.position}
                         </SelectItem>

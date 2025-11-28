@@ -5,20 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { ShieldAlert, Users, Briefcase } from 'lucide-react';
-import type { User as UserType } from '@/lib/types';
-import { collection, query } from 'firebase/firestore';
+import type { User as UserType, Division } from '@/lib/types';
+import { collection, query, orderBy } from 'firebase/firestore';
 
-const divisions = [
-  { id: 'div-01', name: 'Divisi Keimanan & Ketaqwaan' },
-  { id: 'div-02', name: 'Divisi Organisasi & Arganisasi' },
-  { id: 'div-03', name: 'Divisi Kehidupan Berbangsa & Bernegara' },
-  { id: 'div-04', name: 'Divisi Dokumentasi & Kesenian' },
-  { id: 'div-05', name: 'Divisi Olahraga' },
-  { id: 'div-06', name: 'Divisi Hubungan Masyarakat' },
-  { id: 'div-07', name: 'Divisi Teknologi & Komunikasi' },
-  { id: 'div-08', name: 'Divisi Keamanan & Ketertiban' },
-  { id: 'div-09', name: 'Divisi Kesehatan' },
-];
 
 export default function DivisionsPage() {
   const { user: currentUser } = useUser();
@@ -27,8 +16,14 @@ export default function DivisionsPage() {
   const membersQuery = useMemoFirebase(() =>
     firestore ? query(collection(firestore, 'users')) : null
   , [firestore]);
-  
-  const { data: members, isLoading } = useCollection<UserType>(membersQuery);
+  const { data: members, isLoading: membersLoading } = useCollection<UserType>(membersQuery);
+
+  const divisionsQuery = useMemoFirebase(() =>
+    firestore ? query(collection(firestore, 'divisions'), orderBy('order', 'asc')) : null
+  , [firestore]);
+  const { data: divisions, isLoading: divisionsLoading } = useCollection<Division>(divisionsQuery);
+
+  const isLoading = membersLoading || divisionsLoading;
 
   if (!currentUser || currentUser.accessLevel < 7) {
     return (
@@ -49,30 +44,38 @@ export default function DivisionsPage() {
   return (
     <div className="space-y-6">
       <h1 className="font-headline text-3xl md:text-4xl">Daftar Divisi</h1>
-      <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        {divisions.map((division) => {
-          const divisionMembers = membersByDivision(division.id);
-          const ketua = divisionMembers.find(m => m.position.startsWith('Ketua'));
+      {isLoading ? (
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i}><CardHeader><Skeleton className='h-6 w-3/4'/><Skeleton className='h-4 w-1/2'/></CardHeader><CardContent><Skeleton className='h-5 w-20'/></CardContent></Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {divisions?.map((division) => {
+            const divisionMembers = membersByDivision(division.id);
+            const ketua = divisionMembers.find(m => m.position.startsWith('Ketua'));
 
-          return (
-            <Card key={division.id}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Briefcase className="h-5 w-5 text-primary" />
-                  {division.name}
-                </CardTitle>
-                {ketua && <CardDescription>Ketua: {ketua.name}</CardDescription>}
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center text-sm text-muted-foreground">
-                    <Users className="h-4 w-4 mr-2" />
-                    {isLoading ? <Skeleton className="h-4 w-20" /> : `${divisionMembers.length} Anggota`}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+            return (
+              <Card key={division.id}>
+                <CardHeader>
+                  <CardTitle className="flex items-start gap-2">
+                    <Briefcase className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                    <span>{division.name}</span>
+                  </CardTitle>
+                  {ketua ? <CardDescription>Ketua: {ketua.name}</CardDescription> : <CardDescription>Ketua belum ditentukan</CardDescription>}
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                      <Users className="h-4 w-4 mr-2" />
+                      {isLoading ? <Skeleton className="h-4 w-20" /> : `${divisionMembers.length} Anggota`}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

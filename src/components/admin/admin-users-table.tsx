@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import { useFirestore, deleteDocumentNonBlocking, useUser } from '@/firebase';
-import type { User } from '@/lib/types';
+import type { User, Division } from '@/lib/types';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
@@ -26,9 +26,10 @@ import { EditUserDialog } from './edit-user-dialog';
 interface AdminUsersTableProps {
   users: User[];
   isLoading?: boolean;
+  divisions: Division[];
 }
 
-export function AdminUsersTable({ users, isLoading }: AdminUsersTableProps) {
+export function AdminUsersTable({ users, isLoading, divisions }: AdminUsersTableProps) {
   const { user: currentUser } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -50,7 +51,6 @@ export function AdminUsersTable({ users, isLoading }: AdminUsersTableProps) {
   const handleDeleteUser = () => {
     if (!firestore || !selectedUser?.id) return;
     
-    // You cannot delete yourself
     if (currentUser?.uid === selectedUser.uid) {
         toast({
             variant: "destructive",
@@ -144,7 +144,7 @@ export function AdminUsersTable({ users, isLoading }: AdminUsersTableProps) {
             <AlertDialogHeader>
             <AlertDialogTitle>Apakah Anda yakin?</AlertDialogTitle>
             <AlertDialogDescription>
-                Tindakan ini tidak dapat dibatalkan. Ini akan menghapus data pengguna secara permanen, tetapi tidak akan menghapus akun autentikasi mereka. Pengguna harus dibuat ulang.
+                Tindakan ini tidak dapat dibatalkan. Ini akan menghapus data pengguna secara permanen, tetapi tidak akan menghapus akun autentikasi mereka.
             </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -155,11 +155,12 @@ export function AdminUsersTable({ users, isLoading }: AdminUsersTableProps) {
             </AlertDialogFooter>
         </AlertDialogContent>
     </AlertDialog>
-    {selectedUser && (
+    {selectedUser && divisions && (
       <EditUserDialog 
         isOpen={isEditDialogOpen}
         setIsOpen={setEditDialogOpen}
         user={selectedUser}
+        divisions={divisions}
       />
     )}
     </>
