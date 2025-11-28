@@ -8,9 +8,10 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Briefcase, Users, Bot } from 'lucide-react';
+import { Briefcase, Users, Bot, Vote } from 'lucide-react';
 import Link from 'next/link';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 
 export default function PortalPage() {
   const firestore = useFirestore();
@@ -51,6 +52,12 @@ export default function PortalPage() {
                  <Link href="/portal" className="flex items-center gap-2">
                     <Bot className="w-8 h-8 text-primary" />
                     <span className="font-headline text-xl font-bold text-foreground">Nusantara OSIS Hub</span>
+                </Link>
+                <Link href="/portal/evoting">
+                    <Button>
+                        <Vote className="mr-2 h-4 w-4" />
+                        E-Voting Pemilihan Ketua OSIS
+                    </Button>
                 </Link>
             </div>
         </header>

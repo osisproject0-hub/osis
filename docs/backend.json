@@ -202,6 +202,47 @@
         "recordedByName": { "type": "string" }
       },
       "required": ["date", "description", "type", "amount", "recordedBy", "recordedByName"]
+    },
+    "Candidate": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Candidate",
+      "type": "object",
+      "description": "Represents a candidate in the e-voting election.",
+      "properties": {
+        "name": { "type": "string" },
+        "vision": { "type": "string" },
+        "mission": { "type": "string" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "photoHint": { "type": "string" },
+        "voteCount": { "type": "number" },
+        "order": { "type": "number" }
+      },
+      "required": ["name", "vision", "mission", "photoURL", "voteCount", "order"]
+    },
+    "Vote": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Vote",
+      "type": "object",
+      "description": "Represents a single vote cast by a user.",
+      "properties": {
+        "voterId": { "type": "string" },
+        "candidateId": { "type": "string" },
+        "votedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["voterId", "candidateId", "votedAt"]
+    },
+    "Election": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Election",
+      "type": "object",
+      "description": "Represents the state of the election.",
+      "properties": {
+        "title": { "type": "string" },
+        "isActive": { "type": "boolean" },
+        "startDate": { "type": "string", "format": "date-time" },
+        "endDate": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "isActive"]
     }
   },
   "auth": { "providers": ["password", "anonymous"] },
@@ -233,6 +274,18 @@
     "/financialReports/{reportId}": {
       "schema": { "$ref": "#/entities/FinancialReport" },
       "description": "Stores all financial transactions."
+    },
+    "/candidates/{candidateId}": {
+      "schema": { "$ref": "#/entities/Candidate" },
+      "description": "Stores e-voting candidate information."
+    },
+    "/votes/{voteId}": {
+      "schema": { "$ref": "#/entities/Vote" },
+      "description": "Stores individual votes from users."
+    },
+    "/election/{electionId}": {
+      "schema": { "$ref": "#/entities/Election" },
+      "description": "Stores the state of the current election."
     }
   }
 }

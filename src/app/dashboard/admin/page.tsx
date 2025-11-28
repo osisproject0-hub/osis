@@ -4,8 +4,8 @@ import * as React from 'react';
 import { useCollection, useFirestore, useMemoFirebase, useUser } from '@/firebase';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { ShieldAlert, PlusCircle, UserPlus, Briefcase, BookOpen, GalleryHorizontal } from 'lucide-react';
-import type { User, Division, WorkProgram, GalleryImage } from '@/lib/types';
+import { ShieldAlert, PlusCircle, UserPlus, Briefcase, BookOpen, GalleryHorizontal, Vote } from 'lucide-react';
+import type { User, Division, WorkProgram, GalleryImage, Candidate, Election } from '@/lib/types';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AdminUsersTable } from '@/components/admin/admin-users-table';
@@ -17,6 +17,7 @@ import { AddDivisionDialog } from '@/components/admin/add-division-dialog';
 import { AddProgramDialog } from '@/components/admin/add-program-dialog';
 import { AddGalleryImageDialog } from '@/components/admin/add-gallery-image-dialog';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { AdminEvotingPanel } from '@/components/admin/evoting/admin-evoting-panel';
 
 
 export default function AdminPage() {
@@ -41,6 +42,12 @@ export default function AdminPage() {
 
     const galleryQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'galleryImages'), orderBy('order', 'asc')) : null, [firestore]);
     const { data: galleryImages, isLoading: galleryLoading } = useCollection<GalleryImage>(galleryQuery);
+
+    const candidatesQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'candidates'), orderBy('order', 'asc')) : null, [firestore]);
+    const { data: candidates, isLoading: candidatesLoading } = useCollection<Candidate>(candidatesQuery);
+
+    const electionQuery = useMemoFirebase(() => firestore ? query(collection(firestore, 'election')) : null, [firestore]);
+    const { data: election, isLoading: electionLoading } = useCollection<Election>(electionQuery);
 
 
     if (isUserLoading) {
@@ -70,11 +77,12 @@ export default function AdminPage() {
                 </div>
 
                 <Tabs defaultValue="users">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="users"><UserPlus className="mr-2" /> Anggota</TabsTrigger>
                         <TabsTrigger value="divisions"><Briefcase className="mr-2"/> Divisi</TabsTrigger>
                         <TabsTrigger value="programs"><BookOpen className="mr-2"/> Program Kerja</TabsTrigger>
                         <TabsTrigger value="gallery"><GalleryHorizontal className="mr-2"/> Galeri</TabsTrigger>
+                        <TabsTrigger value="evoting"><Vote className="mr-2"/> E-Voting</TabsTrigger>
                     </TabsList>
                     <TabsContent value="users">
                         <Card>
@@ -143,6 +151,13 @@ export default function AdminPage() {
                                <AdminGalleryTable images={galleryImages || []} isLoading={galleryLoading} />
                             </CardContent>
                         </Card>
+                    </TabsContent>
+                    <TabsContent value="evoting">
+                        <AdminEvotingPanel
+                            candidates={candidates || []}
+                            election={election ? election[0] : null}
+                            isLoading={candidatesLoading || electionLoading}
+                        />
                     </TabsContent>
                 </Tabs>
             </div>

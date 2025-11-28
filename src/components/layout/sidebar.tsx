@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase, FileSignature, Shield } from 'lucide-react';
+import { Bot, LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase, FileSignature, Shield, Vote } from 'lucide-react';
 
 import { useUser } from '@/firebase';
 import {

@@ -95,3 +95,29 @@ export interface GalleryImage {
     imageHint: string;
     order: number;
 }
+
+export interface Candidate {
+    id: string;
+    name: string;
+    vision: string;
+    mission: string;
+    photoURL: string;
+    photoHint: string;
+    voteCount: number;
+    order: number;
+}
+
+export interface Vote {
+    id?: string;
+    voterId: string;
+    candidateId: string;
+    votedAt: Timestamp;
+}
+
+export interface Election {
+    id?: string;
+    title: string;
+    isActive: boolean;
+    startDate?: Timestamp;
+    endDate?: Timestamp;
+}

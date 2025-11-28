@@ -13,7 +13,7 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accessLevel >= 10;
     }
-
+    
     // Rules for 'users' collection
     match /users/{userId} {
       allow read: if isSignedIn();
@@ -58,6 +58,32 @@ service cloud.firestore {
     match /financialReports/{reportId} {
       allow read: if isSignedIn();
       allow write: if isAdmin() || (isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.position.matches('Bendahara.*'));
+    }
+
+    // E-Voting Rules
+    function isElectionActive() {
+      return get(/databases/$(database)/documents/election/main-election).data.isActive == true;
+    }
+    
+    match /election/{electionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /candidates/{candidateId} {
+      allow read: if true;
+      allow update: if isAdmin() || (isSignedIn() && isElectionActive() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['voteCount'])); // Allow vote count update
+      allow create, delete: if isAdmin();
+    }
+
+    match /votes/{voteId} {
+      allow read: if isOwner(request.resource.data.voterId) || isAdmin();
+      // Allow create only if the election is active and the user hasn't voted yet.
+      allow create: if isSignedIn() 
+                      && isElectionActive() 
+                      && request.auth.uid == request.resource.data.voterId
+                      && !exists(/databases/$(database)/documents/votes/$(request.auth.uid));
+      allow delete, update: if false;
     }
   }
 }
