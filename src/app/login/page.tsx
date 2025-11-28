@@ -4,7 +4,7 @@ import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Bot, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -106,8 +106,8 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-md p-4">
         <Card className="shadow-2xl">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex items-center justify-center w-16 h-16 rounded-full bg-primary/10">
-                <Bot className="w-8 h-8 text-primary" />
+            <div className="mx-auto mb-4 flex items-center justify-center w-20 h-20 rounded-full bg-primary/10">
+                <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Logo_OSIS.svg/1200px-Logo_OSIS.svg.png" alt="OSIS Logo" width={64} height={64} />
             </div>
             <CardTitle className="font-headline text-4xl">OSIS SMAKDA</CardTitle>
             <CardDescription className="pt-2">Digital Command Center</CardDescription>

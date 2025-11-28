@@ -8,7 +8,7 @@ import { collection, query, orderBy, doc, runTransaction, writeBatch, serverTime
 import type { Candidate, Election, Vote as VoteType } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Bot, Vote, CheckCircle, BarChart, XCircle } from 'lucide-react';
+import { Vote, CheckCircle, BarChart, XCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
@@ -113,7 +113,7 @@ export default function EVotingPage() {
       <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
           <div className="container mx-auto flex justify-between items-center">
                 <Link href="/portal" className="flex items-center gap-2">
-                  <Bot className="w-8 h-8 text-primary" />
+                  <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Logo_OSIS.svg/1200px-Logo_OSIS.svg.png" alt="OSIS Logo" width={32} height={32} />
                   <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
               </Link>
               {authUser && <span className="text-sm text-muted-foreground">Masuk sebagai {authUser.email}</span>}
@@ -229,7 +229,7 @@ export default function EVotingPage() {
 
 function MessageScreen({ icon: Icon, title, message }: { icon: React.ElementType, title: string, message: string }) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-4">
             <Icon className="w-16 h-16 text-muted-foreground mb-4" />
             <h1 className="text-2xl font-bold">{title}</h1>
             <p className="text-muted-foreground">{message}</p>

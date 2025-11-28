@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase, FileSignature, Shield, Vote } from 'lucide-react';
+import { LayoutDashboard, FileCheck, Users, Settings, BookText, DollarSign, Briefcase, FileSignature, Shield, Vote } from 'lucide-react';
+import Image from 'next/image';
 
 import { useUser } from '@/firebase';
 import {
@@ -37,7 +38,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" variant="sidebar">
       <SidebarHeader>
         <div className="flex items-center gap-2 p-2">
-            <Bot className="w-8 h-8 text-primary-foreground" />
+            <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Logo_OSIS.svg/1200px-Logo_OSIS.svg.png" alt="OSIS Logo" width={32} height={32} className="w-8 h-8"/>
             <span className="font-headline text-lg text-primary-foreground">OSIS SMAKDA</span>
         </div>
       </SidebarHeader>

@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, Target, Users, BookOpen, GalleryHorizontal, Vote } from 'lucide-react';
+import { Target, Users, BookOpen, GalleryHorizontal, Vote } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useDoc, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import type { Election } from '@/lib/types';
+import Image from 'next/image';
 
 
 const navItems = [
@@ -33,7 +34,7 @@ export default function PortalLayout({
             <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b">
                 <div className="container mx-auto flex justify-between items-center py-3 px-4 md:px-8">
                     <Link href="/portal" className="flex items-center gap-2">
-                        <Bot className="w-8 h-8 text-primary" />
+                        <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Logo_OSIS.svg/1200px-Logo_OSIS.svg.png" alt="OSIS Logo" width={32} height={32} />
                         <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
                     </Link>
                     <div className='flex items-center gap-4'>

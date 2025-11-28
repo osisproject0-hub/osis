@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TasksTable } from "@/components/tasks-table";
-import { Mail, Briefcase, Bot } from "lucide-react";
+import { Mail, Briefcase } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -35,7 +35,7 @@ export default function UserProfilePage() {
     if (!user) {
         return (
              <div className="flex flex-col items-center justify-center min-h-screen bg-background text-center p-4">
-                <Bot className="h-16 w-16 text-muted-foreground mb-4"/>
+                <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Logo_OSIS.svg/1200px-Logo_OSIS.svg.png" alt="OSIS Logo" width={64} height={64} className="mb-4 text-muted-foreground"/>
                 <h1 className="text-2xl font-bold">Pengguna tidak ditemukan</h1>
                 <p className="text-muted-foreground">Profil yang Anda cari tidak ada atau telah dihapus.</p>
                  <Link href="/portal" className="mt-6">
@@ -52,7 +52,7 @@ export default function UserProfilePage() {
         <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm py-4 px-4 md:px-8 border-b">
             <div className="container mx-auto flex justify-between items-center">
                  <Link href="/portal" className="flex items-center gap-2">
-                    <Bot className="w-8 h-8 text-primary" />
+                    <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Logo_OSIS.svg/1200px-Logo_OSIS.svg.png" alt="OSIS Logo" width={32} height={32} />
                     <span className="font-headline text-xl font-bold text-foreground">OSIS SMAKDA</span>
                 </Link>
                  <Link href="/login" >
