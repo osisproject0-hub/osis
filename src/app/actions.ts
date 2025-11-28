@@ -2,6 +2,7 @@
 
 import { aiBriefingForKetua, AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
 import { aiNotulenForSecretaries, AiNotulenForSecretariesInput } from '@/ai/flows/ai-notulen-for-secretaries';
+import { aiSuratResmiForSecretaries, AiSuratResmiForSecretariesInput } from '@/ai/flows/ai-surat-resmi-for-secretaries';
 
 export async function generateBriefingAction(input: AIBriefingForKetuaInput) {
   try {
@@ -22,3 +23,13 @@ export async function generateNotulenAction(input: AiNotulenForSecretariesInput)
     return { success: false, error: 'Failed to generate minutes.' };
   }
 }
+
+export async function generateSuratResmiAction(input: AiSuratResmiForSecretariesInput) {
+    try {
+      const result = await aiSuratResmiForSecretaries(input);
+      return { success: true, data: result };
+    } catch (error) {
+      console.error(error);
+      return { success: false, error: 'Failed to generate official letter.' };
+    }
+  }

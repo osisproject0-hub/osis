@@ -4,13 +4,24 @@ import { FileCheck, Users, Wallet, BarChart, PlusCircle } from 'lucide-react';
 import * as React from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { AIBriefing } from '@/components/dashboard/ai-briefing';
 import { TasksTable } from '@/components/tasks-table';
 import type { Task, User as UserType, FundRequest, FinancialReport, Division } from '@/lib/types';
 import { AddTaskDialog } from '@/components/add-task-dialog';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ChartContainer, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
+
+
+const chartConfig = {
+  progress: {
+    label: "Progress",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig;
+
 
 export function KetuaDashboard() {
   const { user } = useUser();
@@ -36,7 +47,7 @@ export function KetuaDashboard() {
   const divisionsQuery = useMemoFirebase(() =>
     firestore ? query(collection(firestore, 'divisions')) : null
   , [firestore]);
-  const { data: divisions, isLoading: divisionsLoading } = useCollection<Division>(divisionsQuery);
+  const { data: divisionsData, isLoading: divisionsLoading } = useCollection<Division>(divisionsQuery);
   
   const financialReportsQuery = useMemoFirebase(() =>
     firestore ? query(collection(firestore, 'financialReports')) : null
@@ -61,13 +72,39 @@ export function KetuaDashboard() {
     return Math.round((completedTasks / allTasks.length) * 100);
   }, [allTasks]);
 
+  const divisionProgressChartData = React.useMemo(() => {
+    if (!allTasks || !allUsers) return [];
+
+    const tasksByDivision: { [key: string]: { total: number, completed: number } } = {};
+
+    allTasks.forEach(task => {
+        const member = allUsers.find(u => u.uid === task.assignedToUID);
+        if (member && member.divisionName) {
+            if (!tasksByDivision[member.divisionName]) {
+                tasksByDivision[member.divisionName] = { total: 0, completed: 0 };
+            }
+            tasksByDivision[member.divisionName].total++;
+            if (task.status === 'completed') {
+                tasksByDivision[member.divisionName].completed++;
+            }
+        }
+    });
+
+    return Object.keys(tasksByDivision).map(divisionName => ({
+        division: divisionName.replace('Divisi ', '').replace('Pengurus ', ''),
+        progress: tasksByDivision[divisionName].total > 0
+            ? Math.round((tasksByDivision[divisionName].completed / tasksByDivision[divisionName].total) * 100)
+            : 0,
+    }));
+  }, [allTasks, allUsers]);
+
   const formatCurrency = (amount: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
 
   const stats = [
-    { title: 'Pending Approvals', value: pendingRequests?.length ?? 0, icon: FileCheck, isLoading: requestsLoading },
-    { title: 'Active Divisions', value: divisions?.length ?? 0, icon: Users, isLoading: divisionsLoading },
-    { title: 'Budget Remaining', value: formatCurrency(financialStats.balance), icon: Wallet, isLoading: reportsLoading },
-    { title: 'Overall Progress', value: `${progressStats}%`, icon: BarChart, isLoading: allTasksLoading },
+    { title: 'Persetujuan Tertunda', value: pendingRequests?.length ?? 0, icon: FileCheck, isLoading: requestsLoading },
+    { title: 'Divisi Aktif', value: allUsers?.map(u => u.divisionId).filter((v, i, a) => a.indexOf(v) === i).length ?? 0, icon: Users, isLoading: !allUsers },
+    { title: 'Sisa Anggaran', value: formatCurrency(financialStats.balance), icon: Wallet, isLoading: reportsLoading },
+    { title: 'Progres Keseluruhan', value: `${progressStats}%`, icon: BarChart, isLoading: allTasksLoading },
   ];
 
   return (
@@ -94,8 +131,32 @@ export function KetuaDashboard() {
         </div>
 
         <Card>
+            <CardHeader>
+                <CardTitle>Progres Kinerja per Divisi</CardTitle>
+                <CardDescription>Persentase tugas yang telah diselesaikan oleh setiap divisi.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {allTasksLoading || !allUsers ? (
+                    <Skeleton className="h-[250px] w-full" />
+                ) : (
+                    <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                        <ResponsiveContainer>
+                            <BarChart data={divisionProgressChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                <CartesianGrid vertical={false} />
+                                <XAxis dataKey="division" tickLine={false} axisLine={false} tickMargin={8} angle={-45} textAnchor="end" height={60} />
+                                <YAxis unit="%" />
+                                <Tooltip cursor={false} content={<ChartTooltipContent formatter={(value) => `${value}%`} />} />
+                                <Bar dataKey="progress" fill="var(--color-progress)" radius={4} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </ChartContainer>
+                )}
+            </CardContent>
+        </Card>
+
+        <Card>
             <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>My Priority Tasks</CardTitle>
+                <CardTitle>Tugas Prioritas Saya</CardTitle>
                  <Button size="sm" onClick={() => setIsAddTaskOpen(true)}>
                     <PlusCircle className="mr-2 h-4 w-4"/>
                     Tambah Tugas Baru

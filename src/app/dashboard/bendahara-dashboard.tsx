@@ -2,14 +2,27 @@
 import Link from 'next/link';
 import * as React from 'react';
 import { useUser, useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { collection, query, where, orderBy } from 'firebase/firestore';
 import type { Task, User as UserType, FundRequest, FinancialReport } from '@/lib/types';
 import { TasksTable } from '@/components/tasks-table';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { DollarSign, PlusCircle } from 'lucide-react';
 import { AddTaskDialog } from '@/components/add-task-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { ChartConfig, ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+
+const chartConfig = {
+  pemasukan: {
+    label: "Pemasukan",
+    color: "hsl(var(--chart-2))",
+  },
+  pengeluaran: {
+    label: "Pengeluaran",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig
 
 export function BendaharaDashboard() {
   const { user } = useUser();
@@ -32,7 +45,7 @@ export function BendaharaDashboard() {
   const { data: pendingRequests, isLoading: requestsLoading } = useCollection<FundRequest>(fundRequestsQuery);
   
   const financialReportsQuery = useMemoFirebase(() =>
-    firestore ? query(collection(firestore, 'financialReports')) : null
+    firestore ? query(collection(firestore, 'financialReports'), orderBy('date', 'asc')) : null
   , [firestore]);
   const { data: financialReports, isLoading: reportsLoading } = useCollection<FinancialReport>(financialReportsQuery);
 
@@ -42,6 +55,28 @@ export function BendaharaDashboard() {
     const totalOut = financialReports.filter(r => r.type === 'Pengeluaran').reduce((acc, curr) => acc + curr.amount, 0);
     const balance = totalIn - totalOut;
     return { totalIn, totalOut, balance };
+  }, [financialReports]);
+
+  const chartData = React.useMemo(() => {
+    if (!financialReports) return [];
+    const monthlyData: {[key: string]: {pemasukan: number, pengeluaran: number}} = {};
+
+    financialReports.forEach(report => {
+        const month = new Date(report.date).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+        if (!monthlyData[month]) {
+            monthlyData[month] = { pemasukan: 0, pengeluaran: 0 };
+        }
+        if (report.type === 'Pemasukan') {
+            monthlyData[month].pemasukan += report.amount;
+        } else {
+            monthlyData[month].pengeluaran += report.amount;
+        }
+    });
+
+    return Object.keys(monthlyData).map(month => ({
+        month,
+        ...monthlyData[month]
+    })).slice(-6); // show last 6 months
   }, [financialReports]);
 
   const formatCurrency = (amount: number) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
@@ -61,7 +96,7 @@ export function BendaharaDashboard() {
                 Financial Flow
             </h1>
             <p className="text-muted-foreground">
-                Manage fund requests and financial reports.
+                Kelola pengajuan dana dan laporan keuangan.
             </p>
         </div>
         <div className="flex gap-2">
@@ -72,7 +107,7 @@ export function BendaharaDashboard() {
             <Link href="/dashboard/finance">
                 <Button>
                     <DollarSign className="mr-2 h-4 w-4" />
-                    Go to Finance Page
+                    Buka Halaman Keuangan
                 </Button>
             </Link>
         </div>
@@ -91,6 +126,29 @@ export function BendaharaDashboard() {
         ))}
       </div>
       
+      <Card>
+          <CardHeader>
+              <CardTitle>Tren Keuangan 6 Bulan Terakhir</CardTitle>
+              <CardDescription>Visualisasi pemasukan dan pengeluaran.</CardDescription>
+          </CardHeader>
+          <CardContent>
+              {reportsLoading ? (
+                  <Skeleton className="h-[250px] w-full" />
+              ) : (
+                <ChartContainer config={chartConfig} className="h-[250px] w-full">
+                    <AreaChart data={chartData} margin={{ left: -20, right: 10, top: 10, bottom: 0 }}>
+                        <CartesianGrid vertical={false} />
+                        <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => value.slice(0, 3)} />
+                        <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `Rp${Number(value) / 1000000} Jt`}/>
+                        <Tooltip content={<ChartTooltipContent formatter={(value, name) => <div>{chartConfig[name as keyof typeof chartConfig].label}: {formatCurrency(Number(value))}</div>} />} />
+                        <Area type="monotone" dataKey="pemasukan" fill="var(--color-pemasukan)" fillOpacity={0.4} stroke="var(--color-pemasukan)" />
+                        <Area type="monotone" dataKey="pengeluaran" fill="var(--color-pengeluaran)" fillOpacity={0.4} stroke="var(--color-pengeluaran)" />
+                    </AreaChart>
+                </ChartContainer>
+              )}
+          </CardContent>
+      </Card>
+
       <TasksTable tasks={myTasks || []} title="My Financial Tasks" isLoading={tasksLoading} />
 
       {user && allUsers && (
