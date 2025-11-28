@@ -16,19 +16,21 @@ import {
 import type { Task, User } from '@/lib/types';
 import { Skeleton } from './ui/skeleton';
 import { Timestamp, doc, collection } from 'firebase/firestore';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, PlusCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from './ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './ui/alert-dialog';
 import { useFirestore, useUser, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { EditTaskDialog } from './edit-task-dialog';
+import { AddTaskDialog } from './add-task-dialog';
 
 
 interface TasksTableProps {
   tasks: Task[];
   title?: string;
   isLoading?: boolean;
+  showAddButton?: boolean;
 }
 
 const priorityVariant: { [key in Task['priority']]: 'default' | 'secondary' | 'destructive' } = {
@@ -51,7 +53,7 @@ const formatDate = (date: Timestamp | string) => {
     return formatDistanceToNow(jsDate, { addSuffix: true, locale: id });
 }
 
-export function TasksTable({ tasks, title, isLoading }: TasksTableProps) {
+export function TasksTable({ tasks, title, isLoading, showAddButton }: TasksTableProps) {
   const { user: currentUser } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -63,6 +65,7 @@ export function TasksTable({ tasks, title, isLoading }: TasksTableProps) {
 
   const [isConfirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const [isEditOpen, setEditOpen] = React.useState(false);
+  const [isAddOpen, setAddOpen] = React.useState(false);
   const [selectedTask, setSelectedTask] = React.useState<Task | null>(null);
 
   const canPerformAction = (task: Task) => {
@@ -188,14 +191,28 @@ export function TasksTable({ tasks, title, isLoading }: TasksTableProps) {
             allUsers={allUsers}
         />
        )}
+       {currentUser && allUsers && (
+        <AddTaskDialog
+            isOpen={isAddOpen}
+            setIsOpen={setAddOpen}
+            currentUser={currentUser}
+            allUsers={allUsers}
+        />
+       )}
     </>
   );
 
   if (title) {
     return (
         <Card>
-            <CardHeader>
+            <CardHeader className='flex-row items-center justify-between'>
                 <CardTitle>{title}</CardTitle>
+                {showAddButton && (
+                    <Button size="sm" onClick={() => setAddOpen(true)}>
+                        <PlusCircle className='h-4 w-4 mr-2'/>
+                        Tambah Tugas
+                    </Button>
+                )}
             </CardHeader>
             <CardContent>
                 {content}

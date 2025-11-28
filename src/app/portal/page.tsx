@@ -72,7 +72,7 @@ export default function PortalPage() {
                 </h2>
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {featureCards.map((feature, index) => (
-                        <Card key={index} className="flex flex-col hover:shadow-lg transition-shadow duration-300 animate-in fade-in-50 slide-in-from-bottom-5" style={{animationDelay: `${index * 100}ms`}}>
+                        <Card key={index} className="flex flex-col hover:shadow-xl hover:-translate-y-2 transition-all duration-300 animate-in fade-in-50 slide-in-from-bottom-5" style={{animationDelay: `${index * 100}ms`}}>
                             <CardHeader className="flex-row items-start gap-4">
                                 <feature.icon className="w-10 h-10 text-primary flex-shrink-0"/>
                                 <div>
@@ -82,8 +82,8 @@ export default function PortalPage() {
                             </CardHeader>
                             <CardContent className="mt-auto">
                                 <Link href={feature.href} className="w-full">
-                                    <Button variant="outline" className="w-full">
-                                        Lihat Selengkapnya <ArrowRight className="ml-2 h-4 w-4" />
+                                    <Button variant="outline" className="w-full group">
+                                        Lihat Selengkapnya <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                     </Button>
                                 </Link>
                             </CardContent>
