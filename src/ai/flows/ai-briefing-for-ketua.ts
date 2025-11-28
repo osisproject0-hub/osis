@@ -26,6 +26,22 @@ const AIBriefingForKetuaOutputSchema = z.object({
 export type AIBriefingForKetuaOutput = z.infer<typeof AIBriefingForKetuaOutputSchema>;
 
 
+const prompt = ai.definePrompt({
+    name: 'aiBriefingForKetuaPrompt',
+    input: { schema: AIBriefingForKetuaInputSchema },
+    output: { schema: AIBriefingForKetuaOutputSchema },
+    prompt: `You are an AI assistant providing a daily briefing for the Ketua OSIS (Head of Student Council).
+
+    Here is a summary of pending approvals: {{{pendingApprovals}}}
+
+    Here is a summary of division progress: {{{divisionProgress}}}
+
+    Here is a summary of sentiment analysis from public forums: {{{sentimentAnalysis}}}
+
+    Based on this information, generate a concise and informative briefing for the Ketua OSIS to quickly understand the current situation and make informed decisions. Structure your output as a single string.`,
+});
+
+
 const aiBriefingForKetuaFlow = ai.defineFlow(
   {
     name: 'aiBriefingForKetuaFlow',
@@ -33,28 +49,11 @@ const aiBriefingForKetuaFlow = ai.defineFlow(
     outputSchema: AIBriefingForKetuaOutputSchema,
   },
   async (input) => {
-    
-    const prompt = `You are an AI assistant providing a daily briefing for the Ketua OSIS (Head of Student Council).
-
-    Here is a summary of pending approvals: ${input.pendingApprovals}
-
-    Here is a summary of division progress: ${input.divisionProgress}
-
-    Here is a summary of sentiment analysis from public forums: ${input.sentimentAnalysis}
-
-    Based on this information, generate a concise and informative briefing for the Ketua OSIS to quickly understand the current situation and make informed decisions. Structure your output as a single string.`;
-    
-    const { output } = await ai.generate({
-        prompt: prompt,
-        output: {
-            schema: AIBriefingForKetuaOutputSchema,
-        }
-    });
-    
+    const { output } = await prompt(input);
     return output!;
   }
 );
 
 export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {
-    return await aiBriefingForKetuaFlow(input);
+    return aiBriefingForKetuaFlow(input);
 }

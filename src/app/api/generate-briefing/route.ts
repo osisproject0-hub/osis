@@ -1,9 +1,9 @@
-import { aiBriefingForKetua } from '@/ai/flows/ai-briefing-for-ketua';
+import { aiBriefingForKetua, AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const input = await req.json();
+    const input: AIBriefingForKetuaInput = await req.json();
     const result = await aiBriefingForKetua(input);
     return NextResponse.json({ success: true, data: result });
   } catch (error: any) {
