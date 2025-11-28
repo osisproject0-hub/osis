@@ -197,7 +197,7 @@ export default function RegisterPage() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Button type="submit" disabled={isLoading} className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90">
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
@@ -209,7 +209,10 @@ export default function RegisterPage() {
             </Form>
             <CardFooter className="flex flex-col items-center justify-center text-sm">
               <p className="text-muted-foreground">
-                  Sudah punya akun? Silakan minta admin untuk mendaftarkan Anda.
+                  Sudah punya akun?{' '}
+                  <Link href="/login" className="font-semibold text-primary hover:underline">
+                      Masuk di sini
+                  </Link>
               </p>
             </CardFooter>
             </>

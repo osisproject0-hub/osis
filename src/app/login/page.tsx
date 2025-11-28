@@ -157,10 +157,7 @@ export default function LoginPage() {
               </Form>
               <CardFooter className="flex flex-col items-center justify-center text-sm">
                 <p className="text-muted-foreground">
-                    Belum punya akun?{' '}
-                    <Link href="/register" className="font-semibold text-primary hover:underline">
-                        Daftar di sini
-                    </Link>
+                    Belum punya akun? Silakan minta admin untuk mendaftarkan Anda.
                 </p>
               </CardFooter>
             </>

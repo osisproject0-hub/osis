@@ -77,11 +77,6 @@ export default function PortalPage() {
                     <Bot className="w-8 h-8 text-primary" />
                     <span className="font-headline text-xl font-bold text-foreground">Nusantara OSIS Hub</span>
                 </Link>
-                <div className='flex items-center gap-4'>
-                     <Link href="/portal">
-                        <Button variant="ghost">Portal</Button>
-                    </Link>
-                </div>
             </div>
         </header>
       <main>
@@ -233,3 +228,5 @@ const DivisionSkeleton = () => (
         </div>
     </div>
 )
+
+    

@@ -54,11 +54,6 @@ export default function UserProfilePage() {
                     <Bot className="w-8 h-8 text-primary" />
                     <span className="font-headline text-xl font-bold text-foreground">Nusantara OSIS Hub</span>
                 </Link>
-                <div className='flex items-center gap-4'>
-                     <Link href="/portal">
-                        <Button variant="ghost">Portal</Button>
-                    </Link>
-                </div>
             </div>
         </header>
         <div className="container mx-auto p-4 md:p-8 mt-8">
