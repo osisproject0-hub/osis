@@ -1,9 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { useCollection, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, orderBy } from 'firebase/firestore';
-import type { User, Division, WorkProgram, GalleryImage } from '@/lib/types';
+import { useCollection, useDoc, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, orderBy, doc } from 'firebase/firestore';
+import type { User, Division, WorkProgram, GalleryImage, Election } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -37,13 +37,16 @@ export default function PortalPage() {
   , [firestore]);
   const { data: galleryImages, isLoading: galleryLoading } = useCollection<GalleryImage>(galleryQuery);
 
+  const electionRef = useMemoFirebase(() => firestore ? doc(firestore, 'election', 'main-election') : null, [firestore]);
+  const { data: election, isLoading: electionLoading } = useDoc<Election>(electionRef);
+
 
   const membersByDivision = (divisions || []).map(division => ({
       ...division,
       members: members?.filter(m => m.divisionId === division.id) || []
   })).filter(d => d.members.length > 0);
 
-  const isLoading = membersLoading || divisionsLoading || programsLoading || galleryLoading;
+  const isLoading = membersLoading || divisionsLoading || programsLoading || galleryLoading || electionLoading;
 
   return (
     <div className="bg-background">
@@ -53,12 +56,14 @@ export default function PortalPage() {
                     <Bot className="w-8 h-8 text-primary" />
                     <span className="font-headline text-xl font-bold text-foreground">Nusantara OSIS Hub</span>
                 </Link>
-                <Link href="/portal/evoting">
-                    <Button>
-                        <Vote className="mr-2 h-4 w-4" />
-                        E-Voting Pemilihan Ketua OSIS
-                    </Button>
-                </Link>
+                {election?.isActive && (
+                  <Link href="/portal/evoting">
+                      <Button>
+                          <Vote className="mr-2 h-4 w-4" />
+                          E-Voting Pemilihan Ketua OSIS
+                      </Button>
+                  </Link>
+                )}
             </div>
         </header>
       <main>
