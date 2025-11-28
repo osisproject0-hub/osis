@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -11,7 +12,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 
-const AIBriefingForKetuaInputSchema = z.object({
+export const AIBriefingForKetuaInputSchema = z.object({
   pendingApprovals: z.string().describe('A summary of pending approvals.'),
   divisionProgress: z.string().describe('A summary of division progress.'),
   sentimentAnalysis: z
@@ -20,7 +21,7 @@ const AIBriefingForKetuaInputSchema = z.object({
 });
 export type AIBriefingForKetuaInput = z.infer<typeof AIBriefingForKetuaInputSchema>;
 
-const AIBriefingForKetuaOutputSchema = z.object({
+export const AIBriefingForKetuaOutputSchema = z.object({
   briefing: z.string().describe('A comprehensive AI briefing for the Ketua OSIS.'),
 });
 export type AIBriefingForKetuaOutput = z.infer<typeof AIBriefingForKetuaOutputSchema>;

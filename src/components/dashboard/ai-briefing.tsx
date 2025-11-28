@@ -57,6 +57,7 @@ export function AIBriefing() {
   
   React.useEffect(() => {
     handleGenerateBriefing();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
