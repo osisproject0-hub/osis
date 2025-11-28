@@ -81,12 +81,6 @@ export default function PortalPage() {
                      <Link href="/portal">
                         <Button variant="ghost">Portal</Button>
                     </Link>
-                    <Link href="/login">
-                        <Button>
-                            <LogIn className='mr-2'/>
-                            Login Anggota
-                        </Button>
-                    </Link>
                 </div>
             </div>
         </header>
@@ -105,10 +99,10 @@ export default function PortalPage() {
           )}
           <div className="absolute inset-0 bg-black/50" />
           <div className="relative z-10 p-4">
-            <h1 className="text-4xl md:text-6xl font-headline font-bold text-shadow-lg">
+            <h1 className="text-4xl md:text-6xl font-headline font-bold" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
               Selamat Datang di Portal OSIS
             </h1>
-            <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto text-shadow">
+            <p className="mt-4 text-lg md:text-xl max-w-2xl mx-auto" style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>
               Pusat informasi dan transparansi kegiatan Organisasi Siswa Intra Sekolah SMK LPPMRI 2 Kedungreja.
             </p>
           </div>

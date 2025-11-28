@@ -29,7 +29,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const auth = useAuth();
-  const { user, isLoading: isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
   
   const [isFirebaseReady, setIsFirebaseReady] = React.useState(false);
@@ -149,7 +149,7 @@ export default function LoginPage() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" disabled={isLoading} className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90">
+                    <Button type="submit" disabled={isLoading} className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90">
                       {isLoading ? <Loader2 className="animate-spin" /> : 'Masuk'}
                     </Button>
                   </CardContent>

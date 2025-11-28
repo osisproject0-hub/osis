@@ -33,7 +33,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const auth = useAuth();
   const firestore = useFirestore();
-  const { user, isLoading: isUserLoading } = useUser();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
   const form = useForm<RegisterFormValues>({
@@ -209,10 +209,7 @@ export default function RegisterPage() {
             </Form>
             <CardFooter className="flex flex-col items-center justify-center text-sm">
               <p className="text-muted-foreground">
-                  Sudah punya akun?{' '}
-                  <Link href="/login" className="font-semibold text-primary hover:underline">
-                      Masuk di sini
-                  </Link>
+                  Sudah punya akun? Silakan minta admin untuk mendaftarkan Anda.
               </p>
             </CardFooter>
             </>

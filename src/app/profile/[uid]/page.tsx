@@ -58,12 +58,6 @@ export default function UserProfilePage() {
                      <Link href="/portal">
                         <Button variant="ghost">Portal</Button>
                     </Link>
-                    <Link href="/login">
-                        <Button>
-                            <LogIn className='mr-2'/>
-                            Login Anggota
-                        </Button>
-                    </Link>
                 </div>
             </div>
         </header>
