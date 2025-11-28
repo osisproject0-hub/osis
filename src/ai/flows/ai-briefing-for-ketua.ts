@@ -4,26 +4,16 @@
  * @fileOverview AI briefing flow for the Ketua OSIS.
  *
  * - aiBriefingForKetua - A function that generates a daily AI briefing for the Ketua OSIS.
- * - AIBriefingForKetuaInput - The input type for the aiBriefingForKetua function.
- * - AIBriefingForKetuaOutput - The return type for the aiBriefingForKetua function.
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { 
+    AIBriefingForKetuaInputSchema, 
+    AIBriefingForKetuaOutputSchema, 
+    type AIBriefingForKetuaInput,
+    type AIBriefingForKetuaOutput
+} from '@/lib/types';
 
-export const AIBriefingForKetuaInputSchema = z.object({
-  pendingApprovals: z.string().describe('A summary of pending approvals.'),
-  divisionProgress: z.string().describe('A summary of division progress.'),
-  sentimentAnalysis: z
-    .string()
-    .describe('A summary of sentiment analysis from public forums.'),
-});
-export type AIBriefingForKetuaInput = z.infer<typeof AIBriefingForKetuaInputSchema>;
-
-export const AIBriefingForKetuaOutputSchema = z.object({
-  briefing: z.string().describe('A comprehensive AI briefing for the Ketua OSIS.'),
-});
-export type AIBriefingForKetuaOutput = z.infer<typeof AIBriefingForKetuaOutputSchema>;
 
 // This function can be called from other server-side code.
 export async function aiBriefingForKetua(input: AIBriefingForKetuaInput): Promise<AIBriefingForKetuaOutput> {

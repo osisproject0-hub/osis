@@ -1,7 +1,8 @@
 'use server';
 
-import { aiNotulenForSecretaries, AiNotulenForSecretariesInput } from '@/ai/flows/ai-notulen-for-secretaries';
-import { aiSuratResmiForSecretaries, AiSuratResmiForSecretariesInput } from '@/ai/flows/ai-surat-resmi-for-secretaries';
+import { aiNotulenForSecretaries } from '@/ai/flows/ai-notulen-for-secretaries';
+import { aiSuratResmiForSecretaries } from '@/ai/flows/ai-surat-resmi-for-secretaries';
+import type { AiNotulenForSecretariesInput, AiSuratResmiForSecretariesInput } from '@/lib/types';
 
 
 export async function generateNotulenAction(input: AiNotulenForSecretariesInput) {

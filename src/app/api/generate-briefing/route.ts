@@ -1,4 +1,5 @@
-import { aiBriefingForKetua, AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
+import { aiBriefingForKetua } from '@/ai/flows/ai-briefing-for-ketua';
+import { type AIBriefingForKetuaInput } from '@/lib/types';
 import { NextResponse } from 'next/server';
 import { getFirestore, collection, query, where, getDocs } from 'firebase-admin/firestore';
 import { initializeApp, getApps, App } from 'firebase-admin/app';

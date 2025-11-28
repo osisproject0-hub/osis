@@ -1,4 +1,5 @@
 import { DocumentReference, Timestamp } from "firebase/firestore";
+import { z } from 'zod';
 
 export interface User {
   id?: string; // Firestore document ID
@@ -123,3 +124,49 @@ export interface Election {
     startDate?: Timestamp;
     endDate?: Timestamp;
 }
+
+// AI Flow Types
+export const AiNotulenForSecretariesInputSchema = z.object({
+  audioDataUri: z
+    .string()
+    .describe(
+      "The audio recording of the meeting, as a data URI that must include a MIME type and use Base64 encoding. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    ),
+});
+export type AiNotulenForSecretariesInput = z.infer<typeof AiNotulenForSecretariesInputSchema>;
+
+export const AiNotulenForSecretariesOutputSchema = z.object({
+  minutes: z
+    .string()
+    .describe('The draft meeting minutes generated from the audio recording.'),
+});
+export type AiNotulenForSecretariesOutput = z.infer<typeof AiNotulenForSecretariesOutputSchema>;
+
+export const AiSuratResmiForSecretariesInputSchema = z.object({
+  recipient: z.string().describe('The recipient of the letter (e.g., "Kepala Sekolah", "Ketua OSIS SMPN 1").'),
+  subject: z.string().describe('The subject or title of the letter (e.g., "Permohonan Izin Tempat", "Undangan Rapat").'),
+  bodyPoints: z.string().describe('A list of key points or the main message to be included in the letter body. Can be bullet points or a short paragraph.'),
+  letterType: z.enum(['invitation', 'request', 'notification']).describe('The type of letter to be generated.'),
+});
+export type AiSuratResmiForSecretariesInput = z.infer<typeof AiSuratResmiForSecretariesInputSchema>;
+
+export const AiSuratResmiForSecretariesOutputSchema = z.object({
+  letter: z
+    .string()
+    .describe('The complete draft of the official letter, formatted in proper Indonesian, including header, body, and closing.'),
+});
+export type AiSuratResmiForSecretariesOutput = z.infer<typeof AiSuratResmiForSecretariesOutputSchema>;
+
+export const AIBriefingForKetuaInputSchema = z.object({
+  pendingApprovals: z.string().describe('A summary of pending approvals.'),
+  divisionProgress: z.string().describe('A summary of division progress.'),
+  sentimentAnalysis: z
+    .string()
+    .describe('A summary of sentiment analysis from public forums.'),
+});
+export type AIBriefingForKetuaInput = z.infer<typeof AIBriefingForKetuaInputSchema>;
+
+export const AIBriefingForKetuaOutputSchema = z.object({
+  briefing: z.string().describe('A comprehensive AI briefing for the Ketua OSIS.'),
+});
+export type AIBriefingForKetuaOutput = z.infer<typeof AIBriefingForKetuaOutputSchema>;
