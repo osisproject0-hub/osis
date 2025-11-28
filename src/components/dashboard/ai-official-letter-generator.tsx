@@ -32,6 +32,9 @@ export function AIOfficialLetterGenerator() {
   const form = useForm<LetterFormValues>({
     resolver: zodResolver(letterSchema),
     defaultValues: {
+        recipient: '',
+        subject: '',
+        bodyPoints: '',
         letterType: 'invitation',
     }
   });
