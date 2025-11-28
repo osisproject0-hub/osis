@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 import { useFirestore, deleteDocumentNonBlocking } from '@/firebase';
-import type { Division } from '@/lib/types';
+import type { Division, User } from '@/lib/types';
 import { doc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Pencil, Trash2, Users } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -23,16 +23,22 @@ import { EditDivisionDialog } from './edit-division-dialog';
 
 interface AdminDivisionsTableProps {
   divisions: Division[];
+  users: User[];
   isLoading?: boolean;
 }
 
-export function AdminDivisionsTable({ divisions, isLoading }: AdminDivisionsTableProps) {
+export function AdminDivisionsTable({ divisions, users, isLoading }: AdminDivisionsTableProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
   
   const [isConfirmDeleteOpen, setConfirmDeleteOpen] = React.useState(false);
   const [isEditDialogOpen, setEditDialogOpen] = React.useState(false);
   const [selectedDivision, setSelectedDivision] = React.useState<Division | null>(null);
+
+  const getMemberCount = (divisionId: string) => {
+    if (!users) return 0;
+    return users.filter(u => u.divisionId === divisionId).length;
+  }
 
   const openDeleteDialog = (division: Division) => {
     setSelectedDivision(division);
@@ -64,6 +70,7 @@ export function AdminDivisionsTable({ divisions, isLoading }: AdminDivisionsTabl
       <TableHeader>
         <TableRow>
           <TableHead>Nama Divisi</TableHead>
+          <TableHead>Anggota</TableHead>
           <TableHead>Urutan</TableHead>
           <TableHead className="w-[50px]"><span className='sr-only'>Aksi</span></TableHead>
         </TableRow>
@@ -80,6 +87,12 @@ export function AdminDivisionsTable({ divisions, isLoading }: AdminDivisionsTabl
             <TableCell>
               <p className="font-semibold">{division.name}</p>
               <p className="text-xs text-muted-foreground">{division.description}</p>
+            </TableCell>
+            <TableCell>
+                <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span className="font-medium">{getMemberCount(division.id)}</span>
+                </div>
             </TableCell>
             <TableCell>{division.order}</TableCell>
             <TableCell>
@@ -140,6 +153,7 @@ function RowSkeleton() {
                 <Skeleton className="h-5 w-40 mb-1" />
                 <Skeleton className="h-3 w-64" />
             </TableCell>
+            <TableCell><Skeleton className="h-5 w-12" /></TableCell>
             <TableCell><Skeleton className="h-5 w-12" /></TableCell>
             <TableCell><Skeleton className="h-8 w-8" /></TableCell>
         </TableRow>

@@ -3,8 +3,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, Settings, User } from 'lucide-react';
+import { LogOut, Settings, User, Moon, Sun } from 'lucide-react';
 import { signOut } from 'firebase/auth';
+import { useTheme } from 'next-themes';
+
 
 import { useUser, useAuth } from '@/firebase';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,6 +19,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent
 } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 
@@ -25,6 +31,8 @@ export function UserNav() {
   const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const { setTheme } = useTheme();
+
 
   const handleLogout = async () => {
     if (!auth) return;
@@ -87,6 +95,26 @@ export function UserNav() {
               <span>Settings</span>
             </DropdownMenuItem>
           </Link>
+           <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <span>Ganti Tema</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => setTheme("light")}>
+                  Light
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("dark")}>
+                  Dark
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setTheme("system")}>
+                  System
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>

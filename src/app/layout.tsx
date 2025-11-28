@@ -3,6 +3,7 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Toaster } from "@/components/ui/toaster"
 import { cn } from '@/lib/utils';
 import './globals.css';
+import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Nusantara OSIS Hub',
@@ -24,10 +25,17 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap" rel="stylesheet" />
       </head>
       <body className={cn("font-body antialiased min-h-screen")}>
-        <FirebaseClientProvider>
-          {children}
-        </FirebaseClientProvider>
-        <Toaster />
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+        >
+            <FirebaseClientProvider>
+            {children}
+            </FirebaseClientProvider>
+            <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

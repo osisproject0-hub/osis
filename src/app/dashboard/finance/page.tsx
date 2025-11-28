@@ -108,6 +108,7 @@ export default function FinancePage() {
                     <TableHead>Tanggal</TableHead>
                     <TableHead>Deskripsi</TableHead>
                     <TableHead>Tipe</TableHead>
+                    <TableHead>Dicatat Oleh</TableHead>
                     <TableHead className="text-right">Jumlah</TableHead>
                     {user?.position?.includes('Bendahara') && <TableHead className="w-[50px]">Aksi</TableHead>}
                   </TableRow>
@@ -115,8 +116,8 @@ export default function FinancePage() {
                 <TableBody>
                   {reportsLoading ? (
                     <>
-                      <TableRow><TableCell colSpan={user?.position?.includes('Bendahara') ? 5 : 4}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
-                      <TableRow><TableCell colSpan={user?.position?.includes('Bendahara') ? 5 : 4}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
+                      <TableRow><TableCell colSpan={user?.position?.includes('Bendahara') ? 6 : 5}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
+                      <TableRow><TableCell colSpan={user?.position?.includes('Bendahara') ? 6 : 5}><Skeleton className="h-8 w-full" /></TableCell></TableRow>
                     </>
                   ) : financialReports?.length ? (
                     financialReports.map((report) => (
@@ -128,6 +129,7 @@ export default function FinancePage() {
                               {report.type}
                           </Badge>
                         </TableCell>
+                        <TableCell>{report.recordedByName}</TableCell>
                         <TableCell className={`text-right font-medium ${report.type === 'Pemasukan' ? 'text-green-600' : 'text-red-600'}`}>
                           {report.type === 'Pemasukan' ? '+' : '-'} {formatCurrency(report.amount)}
                         </TableCell>
@@ -157,7 +159,7 @@ export default function FinancePage() {
                     ))
                   ) : (
                      <TableRow>
-                      <TableCell colSpan={user?.position?.includes('Bendahara') ? 5 : 4} className="h-24 text-center">
+                      <TableCell colSpan={user?.position?.includes('Bendahara') ? 6 : 5} className="h-24 text-center">
                         Belum ada laporan keuangan.
                       </TableCell>
                     </TableRow>

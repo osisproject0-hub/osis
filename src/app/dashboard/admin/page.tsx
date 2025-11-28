@@ -66,6 +66,8 @@ export default function AdminPage() {
         );
     }
     
+    const combinedLoading = usersLoading || divisionsLoading || programsLoading || galleryLoading || candidatesLoading || electionLoading;
+
     return (
         <>
             <div className="space-y-6">
@@ -114,7 +116,7 @@ export default function AdminPage() {
                                 </Button>
                             </CardHeader>
                             <CardContent>
-                               <AdminDivisionsTable divisions={divisions || []} isLoading={divisionsLoading} />
+                               <AdminDivisionsTable divisions={divisions || []} users={allUsers || []} isLoading={divisionsLoading || usersLoading} />
                             </CardContent>
                         </Card>
                     </TabsContent>
