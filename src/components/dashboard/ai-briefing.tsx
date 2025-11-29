@@ -2,11 +2,11 @@
 
 import * as React from 'react';
 import { Bot, Sparkles } from 'lucide-react';
-import { AIBriefingForKetuaInput } from '@/ai/flows/ai-briefing-for-ketua';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { generateBriefingAction } from '@/app/actions';
 
 export function AIBriefing() {
   const [briefing, setBriefing] = React.useState<string | null>(null);
@@ -17,26 +17,9 @@ export function AIBriefing() {
     setIsLoading(true);
     setBriefing(null);
 
-    const mockInput: AIBriefingForKetuaInput = {
-      pendingApprovals: '3 pengajuan dana (Event 17 Agustus, Lomba Catur, Seminar IT) dan 1 proposal kegiatan (Bakti Sosial).',
-      divisionProgress: 'Divisi Olahraga: 80% persiapan Porseni. Divisi Humas: 50% publikasi seminar. Divisi Keagamaan: 90% persiapan Idul Adha.',
-      sentimentAnalysis: 'Sentimen netral cenderung positif. Terdapat beberapa keluhan minor mengenai jadwal ekstrakurikuler yang bentrok.',
-    };
-
     try {
-      const response = await fetch('/api/generate-briefing', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(mockInput),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
-      
-      const result = await response.json();
+      // Call the server action directly
+      const result = await generateBriefingAction();
 
       if (result.success && result.data) {
         setBriefing(result.data.briefing);
@@ -48,7 +31,7 @@ export function AIBriefing() {
         toast({
             variant: 'destructive',
             title: 'Error Generating Briefing',
-            description: 'Failed to generate briefing.',
+            description: error.message || 'Failed to generate briefing.',
         });
     }
 
